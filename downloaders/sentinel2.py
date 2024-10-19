@@ -46,7 +46,7 @@ from matplotlib import pyplot as plt
 #     if response.status_code == 200:
 #         # Save and extract the ZIP file containing the image bands
 #         with zipfile.ZipFile(io.BytesIO(response.content)) as z:
-#             z.extractall("sentinel_image")
+#             z.extractall("data/sentinel_image")
 #         print("Image downloaded and extracted to sentinel_image folder.")
 #     else:
 #         print("Failed to download image.")

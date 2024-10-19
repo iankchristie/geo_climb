@@ -3,7 +3,7 @@ import requests
 url = "https://macrostrat.org/api/v2/mobile/map_query_v2"
 
 # z is zoom, testing on the map shows that 12 seems sufficient.
-params = {"lng": -100.402, "lat": 33.424, "z": 12}
+params = {"lng": -105.2705, "lat": 40.0150, "z": 12}
 
 headers = {
     "Accept": "application/json, text/plain, */*",
