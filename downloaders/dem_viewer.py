@@ -1,15 +1,15 @@
 import rasterio
 from matplotlib import pyplot as plt
 import os
+from file_utils import *
 
 
 def view_dem(
     latitude: float = 40.0150,
     longitude: float = -105.2705,
-    output_folder: str = "data/dem",
+    data_dir: str = "data/dem",
 ):
-    filename_base = f"dem_{latitude}_{longitude}"
-    output_tif = os.path.join(output_folder, f"{filename_base}.tif")
+    output_tif = encode_file(latitude, longitude, "dem", data_dir)
 
     with rasterio.open(output_tif) as src:
         dem_data = src.read(1)

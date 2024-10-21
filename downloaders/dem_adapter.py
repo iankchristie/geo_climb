@@ -4,9 +4,7 @@ import zipfile
 import io
 import os
 import threading
-
-
-file_lock = threading.Lock()
+from filelock import FileLock
 
 
 class DEMAdapter:
@@ -18,6 +16,7 @@ class DEMAdapter:
         ee.Authenticate()
         ee.Initialize(project="geospatialml")
         self.output_folder = output_folder
+        self.lock_file = os.path.join(self.output_folder, "process.lock")
 
     # Defaulting to Boulder to make testing easier
     def download(self, latitude: float = 40.0150, longitude: float = -105.2705):
@@ -54,7 +53,7 @@ class DEMAdapter:
             os.makedirs(self.output_folder, exist_ok=True)
 
             with zipfile.ZipFile(io.BytesIO(response.content)) as z:
-                with file_lock:  # Ensure exclusive access to file operations
+                with FileLock(self.lock_file, timeout=20):
                     for file_info in z.infolist():
                         if file_info.filename.endswith(".tif"):
                             extracted_tif = os.path.join(

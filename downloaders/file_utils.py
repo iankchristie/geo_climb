@@ -1,4 +1,21 @@
 import os
+import pandas as pd
+
+
+def get_undownloaded_lat_lons(
+    data_dir: str,
+    limit: int | None = 10,
+    csv_file_path="./data/climbing_locations.csv",
+) -> list[tuple[float, float]]:
+    df = pd.read_csv(csv_file_path)
+    lat_lon_pairs = df[["Latitude", "Longitude"]].dropna()
+    lat_lon_list = list(lat_lon_pairs.itertuples(index=False, name=None))
+    downloaded = get_lat_lons_from_directory(data_dir)
+    to_download = [lat_lon for lat_lon in lat_lon_list if lat_lon not in downloaded]
+    if limit:
+        return to_download[:limit]
+
+    return to_download
 
 
 def get_lat_lons_from_directory(directory: str) -> set[tuple[float, float]]:
@@ -15,8 +32,13 @@ def get_lat_lons_from_directory(directory: str) -> set[tuple[float, float]]:
     return lat_lon_set
 
 
-def encode_file(latitude: float, longitude: float, data: str) -> str:
-    return f"{data}_{latitude}_{longitude}"
+def encode_file(
+    latitude: float, longitude: float, data: str, data_dir: str | None
+) -> str:
+    filename_base = f"{data}_{latitude}_{longitude}"
+    if data_dir:
+        return os.path.join(data_dir, f"{filename_base}.tif")
+    return filename_base
 
 
 def decode_file(file_name: str) -> list[float]:
