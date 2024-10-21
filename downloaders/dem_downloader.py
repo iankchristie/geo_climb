@@ -8,7 +8,7 @@ import time
 def get_lat_lons(
     data_dir: str,
     limit: int | None = 10,
-    csv_file_path="./data/scratch/lat_lons.csv",
+    csv_file_path="./data/climbing_locations.csv",
 ) -> list[tuple[float, float]]:
     df = pd.read_csv(csv_file_path)
     lat_lon_pairs = df[["Latitude", "Longitude"]].dropna()

@@ -56,5 +56,5 @@ def write_unique_lat_lons(input_file: str, output_file: str) -> None:
 
 if __name__ == "__main__":
     input_file = "./data/scratch/filtered_mtp.csv"
-    output_file = "./data/scratch/lat_lons.csv"
+    output_file = "./data/climbing_locations.csv"
     write_unique_lat_lons(input_file, output_file)
