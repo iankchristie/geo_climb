@@ -104,6 +104,7 @@ dependencies:
   - openjpeg=2.5.2
   - openssl=3.3.2
   - packaging=24.1
+  - pandas=2.2.3
   - pcre2=10.44
   - pillow=11.0.0
   - pip=24.2
@@ -120,7 +121,9 @@ dependencies:
   - pysocks=1.7.1
   - python=3.11.10
   - python-dateutil=2.9.0
+  - python-tzdata=2024.2
   - python_abi=3.11
+  - pytz=2024.1
   - pyu2f=0.1.5
   - qhull=2020.2
   - rasterio=1.4.1

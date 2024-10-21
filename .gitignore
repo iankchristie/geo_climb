@@ -1,2 +1,9 @@
 data/sentinel_image/
 data/dem/
+data/scratch/
+
+**/__pycache__/
+__pycache__/
+*.pyc
+
+**/.DS_Store
