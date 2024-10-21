@@ -40,13 +40,13 @@ from matplotlib import pyplot as plt
 # if response.status_code == 200:
 #     # Save and extract the ZIP file containing the DEM data
 #     with zipfile.ZipFile(io.BytesIO(response.content)) as z:
-#         z.extractall("data/dem_data")
-#     print("DEM data downloaded and extracted to dem_data folder.")
+#         z.extractall("data/dem")
+#     print("DEM data downloaded and extracted to dem folder.")
 # else:
 #     print("Failed to download DEM data.")
 
-# data/dem_data/SRTMGL1_003.elevation.tif
-with rasterio.open("data/dem_data/SRTMGL1_003.elevation.tif") as src:
+# data/dem/SRTMGL1_003.elevation.tif
+with rasterio.open("data/dem/SRTMGL1_003.elevation.tif") as src:
     dem_data = src.read(1)
 
 # Plot the DEM data
