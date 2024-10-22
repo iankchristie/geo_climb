@@ -1,32 +1,36 @@
+import sys
+import os
+
+# Append the root directory of your project
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from matplotlib.axes import Axes
 import rasterio
 import numpy as np
-from matplotlib import pyplot as plt
-import os
+from downloaders.file_utils import *
 
 
 def view_sentinel2(
+    ax: Axes,
     latitude: float = 40.0150,
     longitude: float = -105.2705,
     data_dir: str = "data/sentinel2",
 ):
+    """
+    Plots the Sentinel-2 RGB image for the given latitude and longitude on the provided axes.
+    """
     tif_file = os.path.join(data_dir, f"sen_{latitude}_{longitude}.tif")
 
     # Open the multi-band GeoTIFF file
     with rasterio.open(tif_file) as src:
-        # Read the bands (assuming B4 is Red, B3 is Green, B2 is Blue)
-        red = src.read(1)  # Band 1 (B4: Red)
+        blue = src.read(1)  # Band 1 (B2: Blue)
         green = src.read(2)  # Band 2 (B3: Green)
-        blue = src.read(3)  # Band 3 (B2: Blue)
+        red = src.read(3)  # Band 3 (B4: Red)
 
     # Stack the bands into a 3D array (R, G, B)
     rgb = np.dstack((red, green, blue))
 
-    # Display the image
-    plt.imshow(rgb / np.max(rgb))  # Normalize values to 0-1 for display
-    plt.title(f"True Color Composite (RGB) for {latitude}, {longitude}")
-    plt.show()
-
-
-if __name__ == "__main__":
-    # data/sentinel2/sen_37.51637_-118.57089.tif
-    view_sentinel2(latitude=37.51637, longitude=-118.57089)
+    # Plot the RGB image on the provided axes
+    ax.imshow(rgb / np.max(rgb))  # Normalize values to 0-1 for display
+    ax.set_title(f"True Color Composite (RGB)")
+    ax.axis("off")  # Optionally turn off the axis

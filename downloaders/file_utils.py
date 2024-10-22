@@ -22,7 +22,7 @@ def get_lat_lons_from_directory(directory: str) -> set[tuple[float, float]]:
     lat_lon_set = set()
 
     for file_name in os.listdir(directory):
-        if file_name.endswith(".tif"):
+        if file_name.endswith(".tif") or file_name.endswith(".json"):
             try:
                 lat_lon = tuple(decode_file(file_name))
                 lat_lon_set.add(lat_lon)
@@ -37,7 +37,7 @@ def encode_file(
     longitude: float,
     data: str,
     data_dir: str | None,
-    file_type: str = ".tif",
+    file_type: str = "tif",
 ) -> str:
     filename_base = f"{data}_{latitude}_{longitude}"
     if data_dir:
@@ -45,8 +45,9 @@ def encode_file(
     return filename_base
 
 
-def decode_file(file_name: str, file_type: str = ".tif") -> list[float]:
-    file_name = file_name.replace(f".{file_type}", "")
+def decode_file(file_name: str) -> list[float]:
+    # Remove the file extension by splitting on the last period
+    file_name, _ = os.path.splitext(file_name)
 
     # Split the filename into parts by underscore
     parts = file_name.split("_")
