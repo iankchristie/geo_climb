@@ -3,6 +3,8 @@ data/dem/
 data/dem_parallel/
 data/sentinel2/
 data/sentinel2_parallel/
+data/lithology/
+data/lithology_parallel/
 data/scratch/
 
 **/__pycache__/

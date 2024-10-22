@@ -33,16 +33,20 @@ def get_lat_lons_from_directory(directory: str) -> set[tuple[float, float]]:
 
 
 def encode_file(
-    latitude: float, longitude: float, data: str, data_dir: str | None
+    latitude: float,
+    longitude: float,
+    data: str,
+    data_dir: str | None,
+    file_type: str = ".tif",
 ) -> str:
     filename_base = f"{data}_{latitude}_{longitude}"
     if data_dir:
-        return os.path.join(data_dir, f"{filename_base}.tif")
+        return os.path.join(data_dir, f"{filename_base}.{file_type}")
     return filename_base
 
 
-def decode_file(file_name: str) -> list[float]:
-    file_name = file_name.replace(".tif", "")
+def decode_file(file_name: str, file_type: str = ".tif") -> list[float]:
+    file_name = file_name.replace(f".{file_type}", "")
 
     # Split the filename into parts by underscore
     parts = file_name.split("_")

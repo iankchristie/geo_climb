@@ -22,4 +22,4 @@ def view_dem(
 
 
 if __name__ == "__main__":
-    view_dem(latitude=40.0150, longitude=-105.2705)
+    view_dem(latitude=37.51637, longitude=-118.57089)
