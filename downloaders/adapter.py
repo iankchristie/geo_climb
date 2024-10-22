@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import os
 
 
-class Adapter(ABC):
+class SafeAdapter(ABC):
     def __init__(self, output_folder: str):
         self.output_folder = output_folder
         os.makedirs(self.output_folder, exist_ok=True)

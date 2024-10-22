@@ -4,7 +4,7 @@ import zipfile
 import io
 import os
 from filelock import FileLock
-from adapter import *
+from adapter import SafeAdapter
 
 
 class DEMAdapter(SafeAdapter):

@@ -99,8 +99,6 @@ class Sentinel2Adapter(SafeAdapter):
             for idx, band in enumerate(band_data, start=1):
                 dst.write(band, idx)  # Write each band to the corresponding index
 
-        print(f"Stacked RGB bands saved as {output_tif}")
-
         # Delete the original band files
         self._delete_band_files(band_files)
 
@@ -109,7 +107,6 @@ class Sentinel2Adapter(SafeAdapter):
             if os.path.exists(file_path):
                 try:
                     os.remove(file_path)
-                    print(f"Deleted {file_path}")
                 except Exception as e:
                     print(f"Error deleting {file_path}: {e}")
             else:
