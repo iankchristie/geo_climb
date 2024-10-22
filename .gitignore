@@ -5,7 +5,7 @@ data/sentinel2/
 data/sentinel2_parallel/
 data/lithology/
 data/lithology_parallel/
-data/scratch/
+data/climbing/
 
 **/__pycache__/
 __pycache__/

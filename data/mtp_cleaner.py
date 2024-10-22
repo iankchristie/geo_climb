@@ -2,8 +2,8 @@ import pandas as pd
 
 
 def filter_csv(
-    input_file_path: str = "./data/scratch/mp_routes.csv",
-    output_file_path: str = "./data/scratch/filtered_mtp.csv",
+    input_file_path: str = "./data/climbing/mp_routes.csv",
+    output_file_path: str = "./data/climbing/filtered_mtp.csv",
 ):
     # Read the CSV file
     df = pd.read_csv(input_file_path)
@@ -33,7 +33,7 @@ def filter_csv(
 
 
 def write_unique_lat_lons(
-    input_file: str = "./data/scratch/filtered_mtp.csv",
+    input_file: str = "./data/climbing/filtered_mtp.csv",
     output_file: str = "./data/climbing_locations.csv",
 ) -> None:
     """
