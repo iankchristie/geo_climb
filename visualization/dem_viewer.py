@@ -15,14 +15,12 @@ def view_dem(
     longitude: float = -105.2705,
     data_dir: str = "data/dem",
 ):
-    """
-    Plots the DEM data for the given latitude and longitude on the provided axes.
-    """
     output_tif = encode_file(latitude, longitude, "dem", data_dir)
 
     with rasterio.open(output_tif) as src:
         dem_data = src.read(1)
 
+    print(f"dem shape: {dem_data.shape}")
     im = ax.imshow(dem_data, cmap="terrain")
     ax.set_title(f"DEM")
     ax.axis("off")

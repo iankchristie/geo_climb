@@ -16,9 +16,6 @@ def view_sentinel2(
     longitude: float = -105.2705,
     data_dir: str = "data/sentinel2",
 ):
-    """
-    Plots the Sentinel-2 RGB image for the given latitude and longitude on the provided axes.
-    """
     tif_file = os.path.join(data_dir, f"sen_{latitude}_{longitude}.tif")
 
     # Open the multi-band GeoTIFF file
@@ -30,7 +27,7 @@ def view_sentinel2(
     # Stack the bands into a 3D array (R, G, B)
     rgb = np.dstack((red, green, blue))
 
-    # Plot the RGB image on the provided axes
+    print(f"sen shape: {rgb.shape}")
     ax.imshow(rgb / np.max(rgb))  # Normalize values to 0-1 for display
     ax.set_title(f"True Color Composite (RGB)")
-    ax.axis("off")  # Optionally turn off the axis
+    ax.axis("off")
