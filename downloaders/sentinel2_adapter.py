@@ -6,9 +6,10 @@ import os
 import rasterio
 from glob import glob
 from filelock import FileLock
+from adapter import *
 
 
-class Sentinel2Adapter:
+class Sentinel2Adapter(SafeAdapter):
     def __init__(
         self,
         output_folder: str = "data/sentinel2",
@@ -16,13 +17,12 @@ class Sentinel2Adapter:
         # Authenticate and initialize Earth Engine
         ee.Authenticate()
         ee.Initialize(project="geospatialml")
-        self.output_folder = output_folder
-        self.lock_file = os.path.join(self.output_folder, "process.lock")
+        super().__init__(output_folder)
 
-    def download(self, latitude: float = 40.0150, longitude: float = -105.2705):
+    def download(self, latitude: float, longitude: float):
         point = ee.Geometry.Point([longitude, latitude])
 
-        sentinel2 = ee.ImageCollection("COPERNICUS/S2_SR")
+        sentinel2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
 
         sentinel2_filtered = (
             sentinel2.filterBounds(point)
@@ -48,17 +48,16 @@ class Sentinel2Adapter:
                 }
             )
 
-            # Download the image
             response = requests.get(url, stream=True)
 
             if response.status_code == 200:
+                # This does not extract a file of a standard name to the output directory. But the way we find the
+                # newly extracted bands and combine them into a single image is by finding the file with a band suffix.
+                # This will cause an issue if multiple threads are extracting to the same directory since there will be
+                # multiple files with the same band suffix. We MUST lock the directory for each thread that is extracting.
                 with FileLock(self.lock_file, timeout=20):
-                    # Save and extract the ZIP file containing the image bands
                     with zipfile.ZipFile(io.BytesIO(response.content)) as z:
                         z.extractall(self.output_folder)
-
-                    print("Image downloaded and extracted.")
-
                     # Stack the bands into a single multi-band GeoTIFF
                     self._stack_bands_into_tiff(latitude, longitude)
             else:
@@ -67,24 +66,20 @@ class Sentinel2Adapter:
             print("No image found for the specified location and criteria.")
 
     def _stack_bands_into_tiff(self, latitude: float, longitude: float):
-        """
-        Combine the downloaded RGB bands into a single GeoTIFF file.
-        """
-        # Generate the output filename based on latitude and longitude
         output_tif = os.path.join(self.output_folder, f"sen_{latitude}_{longitude}.tif")
 
-        # Use glob to find the actual file paths for B2, B3, B4 (with timestamps in names)
         band_files = {"B2": None, "B3": None, "B4": None}
-
         for band in band_files:
             # Find the file that ends with the band name (e.g., B2.tif, B3.tif, B4.tif)
             files = glob(os.path.join(self.output_folder, f"*{band}.tif"))
+            # This is a problem, multiple threads have extracted bands into the same directory, it means there is a race condition.
+            if len(files) > 1:
+                raise Exception("Multiple Bands Found")
             if files:
-                band_files[band] = files[0]  # Take the first match
+                band_files[band] = files[0]
 
         if None in band_files.values():
-            print("Error: One or more band files could not be found.")
-            return
+            raise Exception("Error: One or more band files could not be found.")
 
         # Stack the bands into a single multi-band GeoTIFF
         band_data = []
@@ -110,10 +105,7 @@ class Sentinel2Adapter:
         self._delete_band_files(band_files)
 
     def _delete_band_files(self, band_files: dict):
-        """
-        Delete the original individual band files (B2, B3, B4) after they have been combined.
-        """
-        for band, file_path in band_files.items():
+        for _, file_path in band_files.items():
             if os.path.exists(file_path):
                 try:
                     os.remove(file_path)

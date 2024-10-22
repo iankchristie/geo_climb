@@ -3,11 +3,11 @@ import requests
 import zipfile
 import io
 import os
-import threading
 from filelock import FileLock
+from adapter import *
 
 
-class DEMAdapter:
+class DEMAdapter(SafeAdapter):
     def __init__(
         self,
         output_folder: str = "data/dem",
@@ -15,12 +15,9 @@ class DEMAdapter:
         # Authenticate and initialize Earth Engine
         ee.Authenticate()
         ee.Initialize(project="geospatialml")
-        self.output_folder = output_folder
-        self.lock_file = os.path.join(self.output_folder, "process.lock")
+        super().__init__(output_folder)
 
-    # Defaulting to Boulder to make testing easier
-    def download(self, latitude: float = 40.0150, longitude: float = -105.2705):
-        # Create a point geometry
+    def download(self, latitude: float, longitude: float):
         point = ee.Geometry.Point([longitude, latitude])
 
         # Get the SRTM DEM ImageCollection
@@ -41,19 +38,17 @@ class DEMAdapter:
             }
         )
 
-        # Create a base filename based on latitude and longitude
         filename_base = f"dem_{latitude}_{longitude}"
         output_tif = os.path.join(self.output_folder, f"{filename_base}.tif")
 
-        # Download the ZIP file containing the DEM data
         response = requests.get(url, stream=True)
 
         if response.status_code == 200:
-            # Ensure the output directory exists
-            os.makedirs(self.output_folder, exist_ok=True)
-
-            with zipfile.ZipFile(io.BytesIO(response.content)) as z:
-                with FileLock(self.lock_file, timeout=20):
+            # This extracts a file of a standard name to the output directory.
+            # This will cause an issue if multiple threads are extracting to the same directory as they
+            # will be overwritting each other. We MUST lock the directory for each thread that is extracting.
+            with FileLock(self.lock_file, timeout=20):
+                with zipfile.ZipFile(io.BytesIO(response.content)) as z:
                     for file_info in z.infolist():
                         if file_info.filename.endswith(".tif"):
                             extracted_tif = os.path.join(

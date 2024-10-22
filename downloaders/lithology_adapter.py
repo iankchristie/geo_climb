@@ -2,9 +2,10 @@ import requests
 import os
 from filelock import FileLock
 import json
+from adapter import *
 
 
-class LithologyAdapter:
+class LithologyAdapter(SafeAdapter):
     def __init__(
         self,
         output_folder: str = "data/lithology",
@@ -14,11 +15,9 @@ class LithologyAdapter:
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en-US,en;q=0.9",
         }
-        self.output_folder = output_folder
-        self.lock_file = os.path.join(self.output_folder, "process.lock")
+        super().__init__(output_folder)
 
-    # Defaulting to Boulder to make testing easier
-    def download(self, latitude: float = 40.0150, longitude: float = -105.2705):
+    def download(self, latitude: float, longitude: float):
         # z is zoom, testing on the map shows that 12 seems sufficient.
         params = {"lng": -105.2705, "lat": 40.0150, "z": 12}
         response = requests.get(self.url, headers=self.headers, params=params)
@@ -28,6 +27,7 @@ class LithologyAdapter:
         output_json = os.path.join(self.output_folder, f"{filename_base}.json")
 
         if response.status_code == 200:
+            # This is actually probably OK without the locking, but doing just to be safe.
             with FileLock(self.lock_file, timeout=10):
                 try:
                     # Save the response JSON to a file
