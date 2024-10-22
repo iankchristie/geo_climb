@@ -2,14 +2,16 @@ import pandas as pd
 
 
 def filter_csv(
-    input_file_path="./data/scratch/mtp.csv",
-    output_file_path="./data/scratch/filtered_mtp.csv",
+    input_file_path: str = "./data/scratch/mp_routes.csv",
+    output_file_path: str = "./data/scratch/filtered_mtp.csv",
 ):
     # Read the CSV file
     df = pd.read_csv(input_file_path)
 
     # Filter rows where 'Location' does not end with "International"
-    df_filtered = df[~df["Location"].str.strip().str.endswith("International")]
+    df_filtered = df[
+        ~df["Location"].str.strip().str.endswith(("International", "Alaska", "Hawaii"))
+    ]
 
     print(df_filtered.columns)
 
@@ -30,7 +32,10 @@ def filter_csv(
     print(f"Filtered data written to {output_file_path}")
 
 
-def write_unique_lat_lons(input_file: str, output_file: str) -> None:
+def write_unique_lat_lons(
+    input_file: str = "./data/scratch/filtered_mtp.csv",
+    output_file: str = "./data/climbing_locations.csv",
+) -> None:
     """
     Reads lat/lon pairs from the input CSV file, deduplicates them,
     and writes the unique pairs to the output file.
@@ -48,6 +53,8 @@ def write_unique_lat_lons(input_file: str, output_file: str) -> None:
     # Deduplicate the latitude and longitude pairs
     unique_lat_lons = lat_lon_pairs.drop_duplicates()
 
+    unique_lat_lons = unique_lat_lons.round(5)
+
     # Write the unique lat/lon pairs to a new CSV file
     unique_lat_lons.to_csv(output_file, index=False, header=["Latitude", "Longitude"])
 
@@ -55,6 +62,5 @@ def write_unique_lat_lons(input_file: str, output_file: str) -> None:
 
 
 if __name__ == "__main__":
-    input_file = "./data/scratch/filtered_mtp.csv"
-    output_file = "./data/climbing_locations.csv"
-    write_unique_lat_lons(input_file, output_file)
+    filter_csv()
+    write_unique_lat_lons()
