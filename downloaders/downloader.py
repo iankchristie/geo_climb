@@ -42,6 +42,9 @@ def download(adapter: SafeAdapter, limit: int | None = 10, parallel: bool = Fals
     )
 
 
+# Instructions: Uncomment and run the datasets you wish to download. The parallel functionality
+# greatly speeds up download, but please do not run the lithology download in parallel, it could
+# overwhelm the macrostrat servers.
 if __name__ == "__main__":
     # download(DEMAdapter(output_folder="data/dem"), limit=50)
     # download(DEMAdapter(output_folder="data/dem_parallel"), limit=50, parallel=True)
@@ -51,9 +54,10 @@ if __name__ == "__main__":
     #     limit=50,
     #     parallel=True,
     # )
-    download(LithologyAdapter(output_folder="data/lithology"), limit=50)
-    download(
-        LithologyAdapter(output_folder="data/lithology_parallel"),
-        limit=50,
-        parallel=True,
-    )
+    # download(LithologyAdapter(output_folder="data/lithology"), limit=50)
+    # download(
+    #     LithologyAdapter(output_folder="data/lithology_parallel"),
+    #     limit=50,
+    #     parallel=True,
+    # )
+    pass
