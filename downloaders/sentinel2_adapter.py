@@ -98,6 +98,7 @@ class Sentinel2Adapter(SafeAdapter):
         with rasterio.open(output_tif, "w", **profile) as dst:
             for idx, band in enumerate(band_data, start=1):
                 dst.write(band, idx)  # Write each band to the corresponding index
+            print(f"SENTINEL2 data extracted and saved as {output_tif}")
 
         # Delete the original band files
         self._delete_band_files(band_files)

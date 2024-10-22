@@ -46,14 +46,14 @@ def download(adapter: SafeAdapter, limit: int | None = 10, parallel: bool = Fals
 # greatly speeds up download, but please do not run the lithology download in parallel, it could
 # overwhelm the macrostrat servers.
 if __name__ == "__main__":
-    # download(DEMAdapter(output_folder="data/dem"), limit=50)
-    # download(DEMAdapter(output_folder="data/dem_parallel"), limit=50, parallel=True)
-    # download(Sentinel2Adapter(output_folder="data/sentinel2"), limit=50)
-    # download(
-    #     Sentinel2Adapter(output_folder="data/sentinel2_parallel"),
-    #     limit=50,
-    #     parallel=True,
-    # )
+    # download(DEMAdapter(output_folder="data/dem"), limit=500)
+    # download(DEMAdapter(output_folder="data/dem_parallel"), limit=500, parallel=True)
+    download(Sentinel2Adapter(output_folder="data/sentinel2"), limit=500)
+    download(
+        Sentinel2Adapter(output_folder="data/sentinel2_parallel"),
+        limit=500,
+        parallel=True,
+    )
     # download(LithologyAdapter(output_folder="data/lithology"), limit=50)
     # download(
     #     LithologyAdapter(output_folder="data/lithology_parallel"),
