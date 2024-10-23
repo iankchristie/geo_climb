@@ -10,10 +10,10 @@ from downloaders.file_utils import *
 
 
 def view_dem(
+    data_dir: str,
     ax: Axes,
     latitude: float = 40.0150,
     longitude: float = -105.2705,
-    data_dir: str = "data/dem",
 ):
     output_tif = encode_file(latitude, longitude, "dem", data_dir)
 
@@ -22,7 +22,6 @@ def view_dem(
 
     print(f"dem shape: {dem_data.shape}")
     im = ax.imshow(dem_data, cmap="terrain")
-    ax.set_title(f"DEM")
     ax.axis("off")
 
     # Return the colorbar to the caller for adding it to the main figure

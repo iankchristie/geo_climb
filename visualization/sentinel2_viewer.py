@@ -29,5 +29,4 @@ def view_sentinel2(
 
     print(f"sen shape: {rgb.shape}")
     ax.imshow(rgb / np.max(rgb))  # Normalize values to 0-1 for display
-    ax.set_title(f"True Color Composite (RGB)")
     ax.axis("off")
