@@ -1,7 +1,12 @@
 import json
 import os
+import sys
 import rasterio
 import numpy as np
+
+# Append the root directory of your project
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from downloaders.file_utils import *
 
 
 def compare_tif_files(dir1: str, dir2: str):
@@ -134,6 +139,7 @@ def check_dem_files(directory):
 
     Prints the result of the checks for each .tif file.
     """
+    invalid = []
     # List all .tif files in the directory
     for filename in os.listdir(directory):
         if filename.endswith(".tif"):
@@ -147,13 +153,18 @@ def check_dem_files(directory):
                         print(
                             f"Warning: {filename} contains {band_count} bands (should be 1)"
                         )
+                        invalid.append(filename)
+                        continue
 
                     # Check if there is data in the file
                     data = src.read(1)  # Read the first (and only) band
                     if not data.any():
                         print(f"Warning: {filename} contains no valid data")
+                        invalid.append(filename)
             except Exception as e:
                 print(f"Error processing {filename}: {e}")
+                invalid.append(filename)
+    return invalid
 
 
 # Warning: Bands of sen_43.99828_-71.19971.tif contains no valid data
@@ -194,6 +205,7 @@ def check_sen_files(directory):
     Prints the result of the checks for each .tif file.
     """
     # List all .tif files in the directory
+    invalid = []
     for filename in os.listdir(directory):
         if filename.endswith(".tif"):
             file_path = os.path.join(directory, filename)
@@ -206,19 +218,23 @@ def check_sen_files(directory):
                         print(
                             f"Warning: {filename} contains {band_count} bands (should be 3)"
                         )
+                        invalid.append(filename)
                         continue
 
                     # Check if there is valid data in all 3 bands
-                    invalid = False
+                    invalid_bands = False
                     for i in range(1, 4):  # Loop through bands 1, 2, 3
                         data = src.read(i)
                         if not data.any():
-                            invalid = True
-                    if invalid:
+                            invalid_bands = True
+                    if invalid_bands:
                         print(f"Warning: Bands of {filename} contains no valid data")
+                        invalid.append(filename)
 
             except Exception as e:
                 print(f"Error processing {filename}: {e}")
+                invalid.append(filename)
+    return invalid
 
 
 # Warning: lit_41.61618_-124.11507.json does not contain 'mapData'.
@@ -238,6 +254,7 @@ def check_lithology_for_map_data(directory):
 
     Prints the result of the checks for each .json file.
     """
+    invalid = []
     # Iterate through each file in the directory
     for filename in os.listdir(directory):
         if filename.endswith(".json"):
@@ -255,10 +272,14 @@ def check_lithology_for_map_data(directory):
                         and len(data["success"]["data"]["mapData"]) >= 1
                     ):
                         print(f"Warning: {filename} does not contain 'mapData'.")
+                        invalid.append(filename)
             except json.JSONDecodeError as e:
                 print(f"Error reading {filename}: {e}")
+                invalid.append(filename)
             except Exception as e:
                 print(f"Error processing {filename}: {e}")
+                invalid.append(filename)
+    return invalid
 
 
 # Confirmed
@@ -290,9 +311,63 @@ def check_same_files():
     compare_directories(dir1, dir2, dir3)
 
 
+def remove_invalids(file_names):
+    for f in file_names:
+        lat, lon = decode_file(f)
+        dem_file = encode_file(lat, lon, "dem", file_type="tif")
+        delete_file(dem_file, "./data/labeled/dem")
+        sen_file = encode_file(lat, lon, "sen", file_type="tif")
+        delete_file(sen_file, "./data/labeled/sentinel2")
+        lit_file = encode_file(lat, lon, "lit", file_type="json")
+        delete_file(lit_file, "./data/labeled/lithology")
+
+
 if __name__ == "__main__":
     # check_parallelism()
-    # check_same_files()
-    # check_dem_files("./data/labeled/dem")
-    # check_sen_files("./data/labeled/sentinel2")
-    check_lithology_for_map_data("./data/labeled/lithology")
+    check_same_files()
+    invalid_dems = check_dem_files("./data/labeled/dem")
+    invalid_sen = check_sen_files("./data/labeled/sentinel2")
+    invalid_lith = check_lithology_for_map_data("./data/labeled/lithology")
+    invalids = invalid_dems + invalid_sen + invalid_lith
+    print(invalids)
+    # invalids = [
+    #     "dem_37.59522_-122.52383.tif",
+    #     "dem_42.26058_-70.88709.tif",
+    #     "sen_43.99828_-71.19971.tif",
+    #     "sen_35.86384_-93.04812.tif",
+    #     "sen_34.21976_-116.9928.tif",
+    #     "sen_34.27148_-116.98311.tif",
+    #     "sen_34.21994_-116.99222.tif",
+    #     "sen_44.0447_-71.3618.tif",
+    #     "sen_34.27822_-116.9698.tif",
+    #     "sen_44.00694_-71.23067.tif",
+    #     "sen_34.21992_-116.99268.tif",
+    #     "sen_44.00669_-71.23158.tif",
+    #     "sen_44.03984_-71.39582.tif",
+    #     "sen_43.99824_-71.20047.tif",
+    #     "sen_43.99821_-71.20059.tif",
+    #     "sen_44.01938_-71.25702.tif",
+    #     "sen_43.99844_-71.19998.tif",
+    #     "sen_44.00839_-71.23031.tif",
+    #     "sen_44.043_-71.3591.tif",
+    #     "sen_43.9986_-71.19948.tif",
+    #     "sen_44.01767_-71.26066.tif",
+    #     "sen_44.00903_-71.2253.tif",
+    #     "sen_44.02081_-71.25632.tif",
+    #     "sen_35.84203_-93.05528.tif",
+    #     "sen_34.2276_-116.9883.tif",
+    #     "sen_35.8416_-93.0534.tif",
+    #     "sen_44.02013_-71.25665.tif",
+    #     "sen_34.21983_-116.99266.tif",
+    #     "sen_44.04497_-71.36221.tif",
+    #     "sen_34.21967_-116.99275.tif",
+    #     "lit_41.61618_-124.11507.json",
+    #     "lit_37.59522_-122.52383.json",
+    #     "lit_41.14219_-124.15947.json",
+    #     "lit_41.5072_-71.0885.json",
+    #     "lit_46.58611_-87.37897.json",
+    #     "lit_42.26058_-70.88709.json",
+    #     "lit_43.84139_-69.50198.json",
+    #     "lit_35.8558_-121.4153.json",
+    # ]
+    # remove_invalids(invalids)

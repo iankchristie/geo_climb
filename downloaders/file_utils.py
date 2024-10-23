@@ -50,10 +50,10 @@ def encode_file(
     latitude: float,
     longitude: float,
     data: str,
-    data_dir: str | None,
+    data_dir: str | None = None,
     file_type: str = "tif",
 ) -> str:
-    filename_base = f"{data}_{latitude}_{longitude}"
+    filename_base = f"{data}_{latitude}_{longitude}.{file_type}"
     if data_dir:
         return os.path.join(data_dir, f"{filename_base}.{file_type}")
     return filename_base
@@ -71,3 +71,16 @@ def decode_file(file_name: str) -> list[float]:
     longitude = float(parts[-1])
 
     return [latitude, longitude]
+
+
+def delete_file(file_name, directory):
+    file_path = os.path.join(directory, file_name)
+
+    if os.path.exists(file_path):
+        try:
+            os.remove(file_path)
+            print(f"File '{file_name}' successfully deleted from {directory}.")
+        except Exception as e:
+            print(f"Error deleting file '{file_name}': {e}")
+    else:
+        print(f"File '{file_name}' does not exist in the directory {directory}.")
