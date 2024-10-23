@@ -11,10 +11,10 @@ from downloaders.file_utils import *
 
 
 def view_sentinel2(
+    data_dir: str,
     ax: Axes,
     latitude: float = 40.0150,
     longitude: float = -105.2705,
-    data_dir: str = "data/sentinel2",
 ):
     tif_file = os.path.join(data_dir, f"sen_{latitude}_{longitude}.tif")
 

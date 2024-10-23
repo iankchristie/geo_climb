@@ -10,7 +10,7 @@ from adapter import SafeAdapter
 class DEMAdapter(SafeAdapter):
     def __init__(
         self,
-        output_folder: str = "data/dem",
+        output_folder: str,
     ) -> None:
         # Authenticate and initialize Earth Engine
         ee.Authenticate()
@@ -71,5 +71,5 @@ class DEMAdapter(SafeAdapter):
 
 
 if __name__ == "__main__":
-    dem_downloader = DEMAdapter()
+    dem_downloader = DEMAdapter(output_folder="data/labaled/dem")
     dem_downloader.download(latitude=40.0150, longitude=-105.2705)

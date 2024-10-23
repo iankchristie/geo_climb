@@ -1,11 +1,11 @@
-data/sentinel_image/
-data/dem/
-data/dem_parallel/
-data/sentinel2/
-data/sentinel2_parallel/
-data/lithology/
-data/lithology_parallel/
-data/climbing/
+data/labeled/sentinel_image/
+data/labeled/dem/
+data/labeled/dem_parallel/
+data/labeled/sentinel2/
+data/labeled/sentinel2_parallel/
+data/labeled/lithology/
+data/labeled/lithology_parallel/
+data/labeled/climbing/
 
 **/__pycache__/
 __pycache__/

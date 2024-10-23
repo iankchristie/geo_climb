@@ -61,8 +61,8 @@ def compare_tif_files(dir1: str, dir2: str):
 
 # Example usage
 if __name__ == "__main__":
-    dir1 = "data/dem"
-    dir2 = "data/dem_parallel"
+    dir1 = "data/labaled/dem"
+    dir2 = "data/labaled/dem_parallel"
     mismatched_files = compare_tif_files(dir1, dir2)
     # Return the list of mismatched files
     if mismatched_files:
@@ -70,8 +70,8 @@ if __name__ == "__main__":
     else:
         print("All files match.")
 
-    dir1 = "data/sentinel2"
-    dir2 = "data/sentinel2_parallel"
+    dir1 = "data/labeled/sentinel2"
+    dir2 = "data/labeled/sentinel2_parallel"
     mismatched_files = compare_tif_files(dir1, dir2)
     # Return the list of mismatched files
     if mismatched_files:

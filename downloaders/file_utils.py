@@ -3,17 +3,17 @@ import pandas as pd
 
 
 def get_undownloaded_lat_lons(
-    data_dir: str | None = None,
+    download_path: str,
+    downloaded_path: str | None = None,
     limit: int | None = 10,
-    csv_file_path="./data/climbing_locations.csv",
 ) -> list[tuple[float, float]]:
-    df = pd.read_csv(csv_file_path)
+    df = pd.read_csv(download_path)
     lat_lon_pairs = df[["Latitude", "Longitude"]].dropna()
     lat_lon_list = list(lat_lon_pairs.itertuples(index=False, name=None))
-    if not data_dir:
+    if not downloaded_path:
         return lat_lon_list
 
-    downloaded = get_lat_lons_from_directory(data_dir)
+    downloaded = get_lat_lons_from_directory(downloaded_path)
     to_download = [lat_lon for lat_lon in lat_lon_list if lat_lon not in downloaded]
     if limit:
         return to_download[:limit]

@@ -20,8 +20,8 @@ If you want to build the dataset from scratch you'll need to follow the steps be
 ### Climbing Data
 
 1. Download mountain project data from Kaggle here: https://www.kaggle.com/datasets/pdegner/mountain-project-rotues-and-forums
-2. Load the mp_routes.csv into `data/climbing` directory (You may need to create it).
-3. You can clean and run the data using `python3 data/mtp_cleaner.py`
+2. Load the mp_routes.csv into `data/labeled/climbing` directory (You may need to create it).
+3. You can clean and run the data using `python3 data/labeled/mtp_cleaner.py`
 
 ### Earth Engine Data
 

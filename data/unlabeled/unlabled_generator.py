@@ -72,7 +72,7 @@ def generate_lat_lons(
 
 
 if __name__ == "__main__":
-    labeled_lat_lons = get_undownloaded_lat_lons()
+    labeled_lat_lons = get_undownloaded_lat_lons("data/labeled/climbing_locations.csv")
     unlabeled_lat_lons = generate_lat_lons(
         labeled_lat_lons, num=len(labeled_lat_lons), min_distance_km=2
     )

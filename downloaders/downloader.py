@@ -8,9 +8,14 @@ from adapter import *
 
 
 # NOTE: To use the parallel functionality you MUST ensure that your downloader is Thread Safe!
-def download(adapter: SafeAdapter, limit: int | None = 10, parallel: bool = False):
+def download(
+    locations_file: str,
+    adapter: SafeAdapter,
+    limit: int | None = 10,
+    parallel: bool = False,
+):
     data_dir = adapter.output_folder
-    lat_lons = get_undownloaded_lat_lons(data_dir, limit)
+    lat_lons = get_undownloaded_lat_lons(locations_file, data_dir, limit)
 
     start_time = time.time()
     if parallel:
@@ -46,17 +51,17 @@ def download(adapter: SafeAdapter, limit: int | None = 10, parallel: bool = Fals
 # greatly speeds up download, but please do not run the lithology download in parallel, it could
 # overwhelm the macrostrat servers.
 if __name__ == "__main__":
-    # download(DEMAdapter(output_folder="data/dem"), limit=500)
-    # download(DEMAdapter(output_folder="data/dem_parallel"), limit=500, parallel=True)
-    download(Sentinel2Adapter(output_folder="data/sentinel2"), limit=500)
-    download(
-        Sentinel2Adapter(output_folder="data/sentinel2_parallel"),
-        limit=500,
-        parallel=True,
-    )
-    # download(LithologyAdapter(output_folder="data/lithology"), limit=50)
+    # download(DEMAdapter(output_folder="data/labeled/dem"), limit=500)
+    # download(DEMAdapter(output_folder="data/labeled/dem_parallel"), limit=500, parallel=True)
+    # download(Sentinel2Adapter(output_folder="data/labeled/sentinel2"), limit=500)
     # download(
-    #     LithologyAdapter(output_folder="data/lithology_parallel"),
+    #     Sentinel2Adapter(output_folder="data/labeled/sentinel2_parallel"),
+    #     limit=500,
+    #     parallel=True,
+    # )
+    # download(LithologyAdapter(output_folder="data/labeled/lithology"), limit=50)
+    # download(
+    #     LithologyAdapter(output_folder="data/labeled/lithology_parallel"),
     #     limit=50,
     #     parallel=True,
     # )

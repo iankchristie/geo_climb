@@ -12,8 +12,10 @@ from downloaders.file_utils import *
 
 def plot_data(lat: float, lon: float):
     fig, axs = plt.subplots(1, 2, figsize=(12, 6))
-    view_sentinel2(latitude=lat, longitude=lon, ax=axs[0])
-    im = view_dem(latitude=lat, longitude=lon, ax=axs[1])
+    view_sentinel2(
+        data_dir="data/labeled/sentinel2", latitude=lat, longitude=lon, ax=axs[0]
+    )
+    im = view_dem(data_dir="data/labeled/dem", latitude=lat, longitude=lon, ax=axs[1])
     fig.colorbar(im, ax=axs[1], label="Elevation (m)")
     fig.suptitle(f"Data for Latitude: {lat}, Longitude: {lon}", fontsize=16)
     plt.tight_layout()

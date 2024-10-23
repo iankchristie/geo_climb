@@ -8,7 +8,7 @@ from adapter import *
 class LithologyAdapter(SafeAdapter):
     def __init__(
         self,
-        output_folder: str = "data/lithology",
+        output_folder: str,
     ) -> None:
         self.url = "https://macrostrat.org/api/v2/mobile/map_query_v2"
         self.headers = {
@@ -41,5 +41,5 @@ class LithologyAdapter(SafeAdapter):
 
 
 if __name__ == "__main__":
-    lithology_downloader = LithologyAdapter()
+    lithology_downloader = LithologyAdapter(output_folder="data/labeled/lithology")
     lithology_downloader.download(latitude=40.0150, longitude=-105.2705)

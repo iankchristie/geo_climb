@@ -12,7 +12,7 @@ from adapter import *
 class Sentinel2Adapter(SafeAdapter):
     def __init__(
         self,
-        output_folder: str = "data/sentinel2",
+        output_folder: str,
     ) -> None:
         # Authenticate and initialize Earth Engine
         ee.Authenticate()
@@ -115,5 +115,5 @@ class Sentinel2Adapter(SafeAdapter):
 
 
 if __name__ == "__main__":
-    sen_adapter = Sentinel2Adapter()
+    sen_adapter = Sentinel2Adapter(output_folder="data/labeled/sentinel2")
     sen_adapter.download(latitude=40.0150, longitude=-105.2705)
