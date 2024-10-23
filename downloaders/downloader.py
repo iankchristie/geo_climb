@@ -4,7 +4,7 @@ from lithology_adapter import *
 from file_utils import *
 import concurrent.futures
 import time
-from adapter import *
+from safe_adapter import *
 
 
 # NOTE: To use the parallel functionality you MUST ensure that your downloader is Thread Safe!
@@ -52,17 +52,24 @@ def download(
 # overwhelm the macrostrat servers.
 if __name__ == "__main__":
     # download(DEMAdapter(output_folder="data/labeled/dem"), limit=500)
-    # download(DEMAdapter(output_folder="data/labeled/dem_parallel"), limit=500, parallel=True)
+    # download(
+    #     locations_file="data/labeled/climbing_locations.csv",
+    #     adapter=DEMAdapter(output_folder="data/labeled/dem_parallel"),
+    #     limit=50,
+    #     parallel=True,
+    # )
     # download(Sentinel2Adapter(output_folder="data/labeled/sentinel2"), limit=500)
     # download(
-    #     Sentinel2Adapter(output_folder="data/labeled/sentinel2_parallel"),
+    #     locations_file="data/labeled/climbing_locations.csv",
+    #     adapter=Sentinel2Adapter(output_folder="data/labeled/sentinel2_parallel"),
     #     limit=500,
     #     parallel=True,
     # )
     # download(LithologyAdapter(output_folder="data/labeled/lithology"), limit=50)
     # download(
-    #     LithologyAdapter(output_folder="data/labeled/lithology_parallel"),
-    #     limit=50,
+    #     locations_file="data/labeled/climbing_locations.csv",
+    #     adapter=LithologyAdapter(output_folder="data/labeled/lithology_parallel"),
+    #     limit=30,
     #     parallel=True,
     # )
     pass

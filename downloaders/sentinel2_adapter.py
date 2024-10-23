@@ -5,8 +5,7 @@ import io
 import os
 import rasterio
 from glob import glob
-from filelock import FileLock
-from adapter import *
+from safe_adapter import *
 
 
 class Sentinel2Adapter(SafeAdapter):
@@ -19,7 +18,7 @@ class Sentinel2Adapter(SafeAdapter):
         ee.Initialize(project="geospatialml")
         super().__init__(output_folder)
 
-    def download(self, latitude: float, longitude: float):
+    def pull_data(self, latitude: float, longitude: float) -> Response | None:
         point = ee.Geometry.Point([longitude, latitude])
 
         sentinel2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
@@ -48,22 +47,20 @@ class Sentinel2Adapter(SafeAdapter):
                 }
             )
 
-            response = requests.get(url, stream=True)
-
-            if response.status_code == 200:
-                # This does not extract a file of a standard name to the output directory. But the way we find the
-                # newly extracted bands and combine them into a single image is by finding the file with a band suffix.
-                # This will cause an issue if multiple threads are extracting to the same directory since there will be
-                # multiple files with the same band suffix. We MUST lock the directory for each thread that is extracting.
-                with FileLock(self.lock_file, timeout=20):
-                    with zipfile.ZipFile(io.BytesIO(response.content)) as z:
-                        z.extractall(self.output_folder)
-                    # Stack the bands into a single multi-band GeoTIFF
-                    self._stack_bands_into_tiff(latitude, longitude)
-            else:
-                print("Failed to download image.")
+            return requests.get(url, stream=True)
         else:
-            print("No image found for the specified location and criteria.")
+            print(
+                f"No image found for the specified location and criteria at {latitude}, {longitude}."
+            )
+            return None
+
+    def write_data(
+        self, response: requests.Response, latitude: float, longitude: float
+    ):
+        with zipfile.ZipFile(io.BytesIO(response.content)) as z:
+            z.extractall(self.output_folder)
+        # Stack the bands into a single multi-band GeoTIFF
+        self._stack_bands_into_tiff(latitude, longitude)
 
     def _stack_bands_into_tiff(self, latitude: float, longitude: float):
         output_tif = os.path.join(self.output_folder, f"sen_{latitude}_{longitude}.tif")

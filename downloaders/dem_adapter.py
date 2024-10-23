@@ -3,8 +3,7 @@ import requests
 import zipfile
 import io
 import os
-from filelock import FileLock
-from adapter import SafeAdapter
+from safe_adapter import SafeAdapter
 
 
 class DEMAdapter(SafeAdapter):
@@ -17,7 +16,7 @@ class DEMAdapter(SafeAdapter):
         ee.Initialize(project="geospatialml")
         super().__init__(output_folder)
 
-    def download(self, latitude: float, longitude: float):
+    def pull_data(self, latitude: float, longitude: float) -> requests.Response | None:
         point = ee.Geometry.Point([longitude, latitude])
 
         # Get the SRTM DEM ImageCollection
@@ -38,36 +37,24 @@ class DEMAdapter(SafeAdapter):
             }
         )
 
+        return requests.get(url, stream=True)
+
+    def write_data(
+        self, response: requests.Response, latitude: float, longitude: float
+    ):
         filename_base = f"dem_{latitude}_{longitude}"
         output_tif = os.path.join(self.output_folder, f"{filename_base}.tif")
 
-        response = requests.get(url, stream=True)
+        with zipfile.ZipFile(io.BytesIO(response.content)) as z:
+            for file_info in z.infolist():
+                if file_info.filename.endswith(".tif"):
+                    extracted_tif = os.path.join(self.output_folder, file_info.filename)
+                    z.extract(file_info, self.output_folder)
 
-        if response.status_code == 200:
-            # This extracts a file of a standard name to the output directory.
-            # This will cause an issue if multiple threads are extracting to the same directory as they
-            # will be overwritting each other. We MUST lock the directory for each thread that is extracting.
-            with FileLock(self.lock_file, timeout=20):
-                with zipfile.ZipFile(io.BytesIO(response.content)) as z:
-                    for file_info in z.infolist():
-                        if file_info.filename.endswith(".tif"):
-                            extracted_tif = os.path.join(
-                                self.output_folder, file_info.filename
-                            )
-                            z.extract(file_info, self.output_folder)
-
-                            # Rename the file using latitude and longitude
-                            os.rename(extracted_tif, output_tif)
-                            print(f"DEM data extracted and saved as {output_tif}")
-                            return
-
-            print(
-                f"No .tif file found in the downloaded ZIP for coordinates ({latitude}, {longitude})."
-            )
-        else:
-            print(
-                f"Failed to download DEM data for coordinates ({latitude}, {longitude})."
-            )
+                    # Rename the file using latitude and longitude
+                    os.rename(extracted_tif, output_tif)
+                    print(f"DEM data extracted and saved as {output_tif}")
+                    return
 
 
 if __name__ == "__main__":
