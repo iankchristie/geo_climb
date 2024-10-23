@@ -11,7 +11,7 @@ from safe_adapter import *
 def download(
     locations_file: str,
     adapter: SafeAdapter,
-    limit: int | None = 10,
+    limit: int | None,
     parallel: bool = False,
 ):
     data_dir = adapter.output_folder
@@ -54,22 +54,24 @@ if __name__ == "__main__":
     # download(DEMAdapter(output_folder="data/labeled/dem"), limit=500)
     # download(
     #     locations_file="data/labeled/climbing_locations.csv",
-    #     adapter=DEMAdapter(output_folder="data/labeled/dem_parallel"),
-    #     limit=50,
+    #     adapter=DEMAdapter(output_folder="data/labeled/dem"),
     #     parallel=True,
+    #     limit=None,
     # )
     # download(Sentinel2Adapter(output_folder="data/labeled/sentinel2"), limit=500)
-    # download(
-    #     locations_file="data/labeled/climbing_locations.csv",
-    #     adapter=Sentinel2Adapter(output_folder="data/labeled/sentinel2_parallel"),
-    #     limit=500,
-    #     parallel=True,
-    # )
+    download(
+        locations_file="data/labeled/climbing_locations.csv",
+        adapter=Sentinel2Adapter(output_folder="data/labeled/sentinel2"),
+        parallel=True,
+        limit=None,
+    )
     # download(LithologyAdapter(output_folder="data/labeled/lithology"), limit=50)
     # download(
     #     locations_file="data/labeled/climbing_locations.csv",
-    #     adapter=LithologyAdapter(output_folder="data/labeled/lithology_parallel"),
-    #     limit=30,
+    #     adapter=LithologyAdapter(
+    #         output_folder="data/labeled/lithology_parallel", rate_limiter_ms=500
+    #     ),
+    #     limit=None,
     #     parallel=True,
     # )
     pass

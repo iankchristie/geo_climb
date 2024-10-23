@@ -32,8 +32,8 @@ class Sentinel2Adapter(SafeAdapter):
         image = sentinel2_filtered.sort("system:time_start", False).first()
 
         if image:
-            # Define the region to download (e.g., a 1km buffer around the point)
-            region = point.buffer(1000).bounds()
+            # Define the region to download (e.g., a 250m buffer around the point)
+            region = point.buffer(250).bounds()
 
             # Clip the image to the region of interest
             clipped_image = image.clip(region)

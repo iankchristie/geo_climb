@@ -6,15 +6,14 @@ from safe_adapter import *
 
 class LithologyAdapter(SafeAdapter):
     def __init__(
-        self,
-        output_folder: str,
+        self, output_folder: str, rate_limiter_ms: float | None = None
     ) -> None:
         self.url = "https://macrostrat.org/api/v2/mobile/map_query_v2"
         self.headers = {
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en-US,en;q=0.9",
         }
-        super().__init__(output_folder)
+        super().__init__(output_folder=output_folder, rate_limiter_ms=rate_limiter_ms)
 
     def pull_data(self, latitude: float, longitude: float) -> requests.Response | None:
         # z is zoom, testing on the map shows that 12 seems sufficient.

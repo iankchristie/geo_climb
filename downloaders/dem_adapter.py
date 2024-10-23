@@ -22,8 +22,8 @@ class DEMAdapter(SafeAdapter):
         # Get the SRTM DEM ImageCollection
         dem = ee.Image("USGS/SRTMGL1_003")  # SRTM Global 1 arc-second DEM
 
-        # Define the region to download (e.g., a 1km buffer around the point)
-        region = point.buffer(1000).bounds()
+        # Define the region to download (e.g., a 250m buffer around the point)
+        region = point.buffer(250).bounds()
 
         # Clip the DEM to the region of interest
         clipped_dem = dem.clip(region)
