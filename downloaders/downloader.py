@@ -51,27 +51,46 @@ def download(
 # greatly speeds up download, but please do not run the lithology download in parallel, it could
 # overwhelm the macrostrat servers.
 if __name__ == "__main__":
-    # download(DEMAdapter(output_folder="data/labeled/dem"), limit=500)
     # download(
     #     locations_file="data/labeled/climbing_locations.csv",
     #     adapter=DEMAdapter(output_folder="data/labeled/dem"),
     #     parallel=True,
     #     limit=None,
     # )
-    # download(Sentinel2Adapter(output_folder="data/labeled/sentinel2"), limit=500)
-    download(
-        locations_file="data/labeled/climbing_locations.csv",
-        adapter=Sentinel2Adapter(output_folder="data/labeled/sentinel2"),
-        parallel=True,
-        limit=None,
-    )
-    # download(LithologyAdapter(output_folder="data/labeled/lithology"), limit=50)
+    # download(
+    #     locations_file="data/labeled/climbing_locations.csv",
+    #     adapter=Sentinel2Adapter(output_folder="data/labeled/sentinel2"),
+    #     parallel=True,
+    #     limit=None,
+    # )
     # download(
     #     locations_file="data/labeled/climbing_locations.csv",
     #     adapter=LithologyAdapter(
-    #         output_folder="data/labeled/lithology_parallel", rate_limiter_ms=500
+    #         output_folder="data/labeled/lithology", rate_limiter_ms=500
     #     ),
     #     limit=None,
     #     parallel=True,
     # )
+
+    download(
+        locations_file="data/unlabeled/unlabeled_locations.csv",
+        adapter=DEMAdapter(output_folder="data/unlabeled/dem"),
+        parallel=True,
+        limit=None,
+    )
+    download(
+        locations_file="data/unlabeled/unlabeled_locations.csv",
+        adapter=Sentinel2Adapter(output_folder="data/unlabeled/sentinel2"),
+        parallel=True,
+        limit=None,
+    )
+    download(
+        locations_file="data/unlabeled/unlabeled_locations.csv",
+        adapter=LithologyAdapter(
+            output_folder="data/unlabeled/lithology", rate_limiter_ms=None
+        ),
+        limit=None,
+        parallel=True,
+    )
+
     pass

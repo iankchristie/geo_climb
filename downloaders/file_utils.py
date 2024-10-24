@@ -55,7 +55,7 @@ def encode_file(
 ) -> str:
     filename_base = f"{data}_{latitude}_{longitude}.{file_type}"
     if data_dir:
-        return os.path.join(data_dir, f"{filename_base}.{file_type}")
+        return os.path.join(data_dir, f"{filename_base}")
     return filename_base
 
 

@@ -7,6 +7,16 @@ data/labeled/lithology/
 data/labeled/lithology_parallel/
 data/labeled/climbing/
 
+data/unlabeled/sentinel_image/
+data/unlabeled/dem/
+data/unlabeled/dem_parallel/
+data/unlabeled/sentinel2/
+data/unlabeled/sentinel2_parallel/
+data/unlabeled/lithology/
+data/unlabeled/lithology_parallel/
+data/unlabeled/climbing/
+
+
 **/__pycache__/
 __pycache__/
 *.pyc

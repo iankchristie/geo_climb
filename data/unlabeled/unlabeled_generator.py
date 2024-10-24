@@ -12,6 +12,13 @@ from visualization.plot_us_map import *
 
 EARTH_RADIUS_KM = 6371.0
 
+CONTINENTAL_US_BOUNDARIES = {
+    "lat_min": 24.396308,  # Southernmost latitude (Key West, Florida)
+    "lat_max": 49.384358,  # Northernmost latitude (Lake of the Woods, Minnesota)
+    "lon_min": -125.0,  # Westernmost longitude (California coast)
+    "lon_max": -66.93457,  # Easternmost longitude (Maine)
+}
+
 
 def load_us_shape():
     # https://stackoverflow.com/questions/74378025/generate-random-coordinates-in-united-states
@@ -25,9 +32,12 @@ def load_us_shape():
 
 def generate_random_latlon(geo_shape):
     while True:
-        minx, miny, maxx, maxy = geo_shape.total_bounds
-        lat = random.uniform(miny, maxy)
-        lon = random.uniform(minx, maxx)
+        lat = random.uniform(
+            CONTINENTAL_US_BOUNDARIES["lat_min"], CONTINENTAL_US_BOUNDARIES["lat_max"]
+        )
+        lon = random.uniform(
+            CONTINENTAL_US_BOUNDARIES["lon_min"], CONTINENTAL_US_BOUNDARIES["lon_max"]
+        )
 
         point = Point(lon, lat)
         if geo_shape.contains(point).any():
@@ -77,4 +87,4 @@ if __name__ == "__main__":
         labeled_lat_lons, num=len(labeled_lat_lons), min_distance_km=2
     )
     plot_geo_points_us(unlabeled_lat_lons)
-    save_lat_lons_to_csv(unlabeled_lat_lons, "data/unlabeled/unlabled_locations.csv")
+    save_lat_lons_to_csv(unlabeled_lat_lons, "data/unlabeled/unlabeled_locations.csv")
