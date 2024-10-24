@@ -13,6 +13,12 @@ Here is the readme for our Geospatial Machine Learning project GEOClimb. It's go
 - If you install any packages, make sure to `conda env export --name geo_climb --no-builds > environment.yml`
 - If you pull and packages need to be installed, pull them from the conda environment.yml `conda env update --file environment.yml --prune`
 
+## Dataset
+
+The dataset can be downloaded from this link: https://drive.google.com/drive/folders/1lItS74OOocI-ppHx5q0SmEKHP-G_-gmg?usp=drive_link
+
+It contains sentinel2 RGB images, DEM, and lithology information for 12,742 climbing (labeled) locations and 12,692 unlabeled locations.
+
 ## Creating the Dataset
 
 If you want to build the dataset from scratch you'll need to follow the steps below.
