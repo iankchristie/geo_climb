@@ -15,7 +15,7 @@ data/unlabeled/sentinel2_parallel/
 data/unlabeled/lithology/
 data/unlabeled/lithology_parallel/
 data/unlabeled/climbing/
-
+.env
 
 **/__pycache__/
 __pycache__/

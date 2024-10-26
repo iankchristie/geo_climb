@@ -1,0 +1,13 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATA_DIR_UNLBL_SEN = os.getenv("DATA_DIR_UNLBL_SEN")
+DATA_DIR_UNLBL_DEM=os.getenv("DATA_DIR_UNLBL_DEM")
+DATA_DIR_UNLBL_LITH=os.getenv("DATA_DIR_UNLBL_LITH")
+
+class Config:
+    DATA_DIR_UNLBL_SEN = DATA_DIR_UNLBL_SEN
+    DATA_DIR_UNLBL_DEM=DATA_DIR_UNLBL_DEM
+    DATA_DIR_UNLBL_LITH=DATA_DIR_UNLBL_LITH
