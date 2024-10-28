@@ -24,9 +24,13 @@ def plot_max_pitches_per_location(csv_path):
         print(f"Error: Missing columns in the CSV file: {', '.join(missing_cols)}")
         return
 
+    df_filtered = df[(df["Pitches"] >= 1) & (df["Pitches"] <= 14)]
+
     # Group by 'Area Latitude' and 'Area Longitude' and get the max 'Pitches' for each group
     max_pitches_per_location = (
-        df.groupby(["Area Latitude", "Area Longitude"])["Pitches"].max().reset_index()
+        df_filtered.groupby(["Area Latitude", "Area Longitude"])["Pitches"]
+        .max()
+        .reset_index()
     )
     print("Calculated maximum number of pitches at each unique location.")
 
@@ -43,6 +47,7 @@ def plot_max_pitches_per_location(csv_path):
         max_pitches_per_location["Pitches"] >= 2
     ].shape[0]
 
+    print(pitches_distribution)
     print(num_routes_1_pitch)
     print(num_routes_2_or_more_pitches)
     # Plot the bar chart
@@ -50,8 +55,8 @@ def plot_max_pitches_per_location(csv_path):
     pitches_distribution.plot(kind="bar", color="skyblue", edgecolor="black")
 
     # Set plot titles and labels
-    plt.title("Distribution of Maximum Number of Pitches per Location", fontsize=16)
-    plt.xlabel("Maximum Number of Pitches", fontsize=14)
+    plt.title("Maximum Number of Pitches per Location", fontsize=16)
+    plt.xlabel("Pitches", fontsize=14)
     plt.ylabel("Frequency", fontsize=14)
 
     # Rotate x-ticks if necessary
@@ -151,7 +156,7 @@ def plot_max_avg_stars_per_location(csv_path):
     stars_distribution.plot(kind="bar", color="goldenrod", edgecolor="black")
 
     # Set plot titles and labels
-    plt.title("Distribution of Maximum Avg Stars per Location", fontsize=16)
+    plt.title("Maximum Avg Stars per Location", fontsize=16)
     plt.xlabel("Average Stars (Binned)", fontsize=14)
     plt.ylabel("Frequency", fontsize=14)
 
@@ -168,6 +173,49 @@ def plot_max_avg_stars_per_location(csv_path):
     plt.show()
 
 
+def count_unique_lat_lons(csv_path):
+    try:
+        df = pd.read_csv(csv_path)
+        print(f"Successfully loaded data from {csv_path}")
+    except FileNotFoundError:
+        print(f"Error: The file at {csv_path} was not found.")
+        return
+    except pd.errors.EmptyDataError:
+        print("Error: The file is empty.")
+        return
+    except pd.errors.ParserError:
+        print("Error: The file could not be parsed.")
+        return
+
+    # Check if the required columns exist
+    required_columns = {"Avg Stars", "Area Latitude", "Area Longitude"}
+    if not required_columns.issubset(df.columns):
+        missing_cols = required_columns - set(df.columns)
+        print(f"Error: Missing columns in the CSV file: {', '.join(missing_cols)}")
+        return
+
+    # Group by 'Area Latitude' and 'Area Longitude' and get the max 'Pitches' and 'Avg Stars' for each group
+    max_pitches_stars_per_location = (
+        df.groupby(["Area Latitude", "Area Longitude"])
+        .agg(max_pitches=("Pitches", "max"), max_avg_stars=("Avg Stars", "max"))
+        .reset_index()
+    )
+
+    # Filter the locations where max pitches >= 2 and max avg stars >= 2.5
+    filtered_locations = max_pitches_stars_per_location[
+        (max_pitches_stars_per_location["max_pitches"] >= 2)
+        & (max_pitches_stars_per_location["max_avg_stars"] >= 2.5)
+    ]
+
+    # Count the number of unique latitude-longitude pairs
+    num_unique_locations = filtered_locations.shape[0]
+
+    print(
+        f"Number of unique lat-lons with max pitches >= 2 and max avg stars >= 2.5: {num_unique_locations}"
+    )
+
+
 if __name__ == "__main__":
     # plot_max_pitches_per_location("data/labeled/climbing/filtered_mtp.csv")
-    plot_max_avg_stars_per_location("data/labeled/climbing/filtered_mtp.csv")
+    # plot_max_avg_stars_per_location("data/labeled/climbing/filtered_mtp.csv")
+    count_unique_lat_lons("data/labeled/climbing/filtered_mtp.csv")
