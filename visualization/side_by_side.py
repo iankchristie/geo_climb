@@ -15,12 +15,11 @@ from config.config import Config
 def plot_data(lat: float, lon: float):
     fig, axs = plt.subplots(1, 3, figsize=(12, 6))
     view_sentinel2(
-        data_dir=Config.DATA_DIR_UNLBL_SEN,
-        latitude=lat,
-        longitude=lon,
-        ax=axs[0]
+        data_dir=Config.DATA_DIR_UNLBL_SEN, latitude=lat, longitude=lon, ax=axs[0]
     )
-    im = view_dem(data_dir=Config.DATA_DIR_UNLBL_DEM, latitude=lat, longitude=lon, ax=axs[1])
+    im = view_dem(
+        data_dir=Config.DATA_DIR_UNLBL_DEM, latitude=lat, longitude=lon, ax=axs[1]
+    )
     fig.colorbar(im, ax=axs[1], label="Elevation (m)")
     view_lithology(
         data_dir=Config.DATA_DIR_UNLBL_LITH, latitude=lat, longitude=lon, ax=axs[2]
