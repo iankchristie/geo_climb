@@ -216,6 +216,6 @@ def count_unique_lat_lons(csv_path):
 
 
 if __name__ == "__main__":
-    # plot_max_pitches_per_location("data/labeled/climbing/filtered_mtp.csv")
-    # plot_max_avg_stars_per_location("data/labeled/climbing/filtered_mtp.csv")
+    plot_max_pitches_per_location("data/labeled/climbing/filtered_mtp.csv")
+    plot_max_avg_stars_per_location("data/labeled/climbing/filtered_mtp.csv")
     count_unique_lat_lons("data/labeled/climbing/filtered_mtp.csv")

@@ -4,6 +4,10 @@ import sys
 from collections import Counter
 import matplotlib.pyplot as plt
 import pandas as pd
+from scipy.stats import chisquare
+import numpy as np
+from scipy.stats import pearsonr
+
 
 # Append the root directory of your project
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -67,7 +71,46 @@ def analyze(path, title):
     plt.tight_layout()
     plt.show()
 
+    return complete_distribution
+
 
 if __name__ == "__main__":
-    analyze(Config.DATA_DIR_LBL_LITH, "Labeled Lithology IDs")
-    analyze(Config.DATA_DIR_UNLBL_LITH, "Unlabeled Lithology IDs")
+    labeled_dist = analyze(Config.DATA_DIR_LBL_LITH, "Labeled Lithology IDs")
+    unlabeled_dist = analyze(Config.DATA_DIR_UNLBL_LITH, "Unlabeled Lithology IDs")
+
+    keys = set(labeled_dist.keys()).union(unlabeled_dist.keys())
+
+    labeled_dist_values = [labeled_dist.get(key, 0) for key in keys]
+    unlabeled_dist_values = [unlabeled_dist.get(key, 0) for key in keys]
+
+    # Normalize the two distributions so that their sums are equal
+    sum_dist1 = sum(labeled_dist_values)
+    sum_dist2 = sum(unlabeled_dist_values)
+
+    # Scale dist2 to match the sum of dist1
+    unlabeled_values_normalized = [
+        val * (sum_dist1 / sum_dist2) for val in unlabeled_dist_values
+    ]
+
+    # Replace zeros in expected values with a small number to avoid division by zero
+    unlabeled_values_normalized = np.array(unlabeled_values_normalized)
+    unlabeled_values_normalized[unlabeled_values_normalized == 0] = np.finfo(float).eps
+
+    # Calculate Chi-Square distance
+    chi_square_value, p_value = chisquare(
+        f_obs=labeled_dist_values, f_exp=unlabeled_values_normalized
+    )
+
+    print(f"Chi-Square Distance: {chi_square_value}")
+
+    keys = set(labeled_dist.keys()).union(unlabeled_dist.keys())
+
+    labeled_dist_values = [labeled_dist.get(key, 0) for key in keys]
+    unlabeled_dist_values = [unlabeled_dist.get(key, 0) for key in keys]
+
+    # Calculate the Pearson correlation coefficient
+    correlation_coefficient, p_value = pearsonr(
+        labeled_dist_values, unlabeled_dist_values
+    )
+
+    print(f"Pearson Correlation Coefficient: {correlation_coefficient}")
