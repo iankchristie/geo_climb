@@ -20,19 +20,19 @@ def plot_geo_points_us(lat_lons: set[tuple[float, float]]):
 
     for lat, lon in lat_lons:
         ax.plot(
-            lon, lat, marker="o", color="red", markersize=5, transform=ccrs.Geodetic()
+            lon, lat, marker="o", color="blue", markersize=5, transform=ccrs.Geodetic()
         )
 
     # Set the extent of the map to focus on the US
     ax.set_extent([-180, 180, 0, 90], crs=ccrs.PlateCarree())
     ax.gridlines(draw_labels=True)
-    plt.title("Generated Latitude/Longitude Points")
+    plt.title("Unlabeled Locations")
     plt.show()
 
 
 if __name__ == "__main__":
     labeled_lat_lons = set(
-        get_undownloaded_lat_lons("data/labeled/climbing_locations.csv")
+        get_undownloaded_lat_lons("data/unlabeled/unlabeled_locations.csv")
     )
     plot_geo_points_us(labeled_lat_lons)
     # unlabeled_lat_lons = set(

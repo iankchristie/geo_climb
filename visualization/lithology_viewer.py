@@ -12,15 +12,15 @@ import json
 
 def format_text(data):
     formatted_lines = []
-    if data["lith"]:
-        formatted_lines.append(data["lith"])
-
     for lith in data["liths"]:
+        lith_id = lith.get("lith_id", "N/A")
         lith_name = lith.get("lith", "N/A")
         lith_class = lith.get("lith_class", "N/A")
         lith_type = lith.get("lith_type", "N/A")
 
-        formatted_line = f"Lith: {lith_name}, Class: {lith_class}, Type: {lith_type}"
+        formatted_line = (
+            f"ID: {lith_id}, Lith: {lith_name}, Class: {lith_class}, Type: {lith_type}"
+        )
         formatted_lines.append(formatted_line)
 
     return "\n".join(formatted_lines)
