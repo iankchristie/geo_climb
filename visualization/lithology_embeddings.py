@@ -94,9 +94,6 @@ def plot_labeled_unlabeled_embeddings_pca(
 ):
     # Combine labeled and unlabeled embeddings
     all_embeddings = np.vstack((labeled_embeddings, unlabeled_embeddings))
-
-    # Apply PCA to reduce to 2 dimensions
-    pca = PCA(n_components=2)
     reduced_embeddings = reducer.fit_transform(all_embeddings)
 
     # Separate the reduced embeddings back into labeled and unlabeled
