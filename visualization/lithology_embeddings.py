@@ -6,7 +6,7 @@ import sys
 import glob
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
-import umap
+from umap import UMAP
 
 # Append the root directory of your project
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -89,22 +89,87 @@ def plot_embeddings_map(embeddings, lat_lon, reducer=PCA(n_components=3)):
     plt.show()
 
 
-if __name__ == "__main__":
-    embeddings_directory = Config.DATA_DIR_LBL_LITH_EMB
+def plot_labeled_unlabeled_embeddings_pca(
+    labeled_embeddings, unlabeled_embeddings, reducer=PCA(n_components=2)
+):
+    # Combine labeled and unlabeled embeddings
+    all_embeddings = np.vstack((labeled_embeddings, unlabeled_embeddings))
+
+    # Apply PCA to reduce to 2 dimensions
+    pca = PCA(n_components=2)
+    reduced_embeddings = reducer.fit_transform(all_embeddings)
+
+    # Separate the reduced embeddings back into labeled and unlabeled
+    reduced_labeled = reduced_embeddings[: len(labeled_embeddings)]
+    reduced_unlabeled = reduced_embeddings[len(labeled_embeddings) :]
+
+    # Plot labeled embeddings in one color
+    plt.figure(figsize=(10, 8))
+    plt.scatter(
+        reduced_labeled[:, 0],
+        reduced_labeled[:, 1],
+        color="blue",
+        alpha=0.7,
+        label="Labeled Embeddings",
+    )
+
+    # Plot unlabeled embeddings in another color
+    plt.scatter(
+        reduced_unlabeled[:, 0],
+        reduced_unlabeled[:, 1],
+        color="red",
+        alpha=0.7,
+        label="Unlabeled Embeddings",
+    )
+
+    # Label axes and add legend
+    plt.xlabel("PCA Dimension 1")
+    plt.ylabel("PCA Dimension 2")
+    plt.title("PCA of Labeled and Unlabeled Embeddings")
+    plt.legend()
+    plt.show()
+
+
+def get_embeddings_and_locations(directory):
     embeddings = []
     lat_lon = []
 
-    for filename in glob.glob(os.path.join(embeddings_directory, "*.npy")):
+    for filename in glob.glob(os.path.join(directory, "*.npy")):
         embeddings.append(np.load(filename))
         lat_lon.append(decode_file(filename))
 
     embeddings_array = np.array(embeddings)
     lat_lon = np.array(lat_lon)
 
-    plot_embeddings_2d(embeddings)
-    plot_embeddings_3d(embeddings)
-    plot_embeddings_map(embeddings_array, lat_lon)
+    return embeddings_array, lat_lon
 
-    # plot_embeddings_2d(embeddings, umap.UMAP(n_components=2))
-    # plot_embeddings_3d(embeddings, umap.UMAP(n_components=3))
-    # plot_embeddings_map(embeddings_array, lat_lon, umap.UMAP(n_components=3))
+
+if __name__ == "__main__":
+    labeled_embeddings, labeled_lat_lon = get_embeddings_and_locations(
+        Config.DATA_DIR_LBL_LITH_EMB
+    )
+    unlabeled_embeddings, unlabeled_lat_lon = get_embeddings_and_locations(
+        Config.DATA_DIR_UNLBL_LITH_EMB
+    )
+
+    plot_labeled_unlabeled_embeddings_pca(
+        labeled_embeddings, unlabeled_embeddings, UMAP(n_components=2)
+    )
+
+    # plot_embeddings_2d(labeled_embeddings)
+    # plot_embeddings_3d(labeled_embeddings)
+    # plot_embeddings_map(labeled_embeddings, unlabeled_lat_lon)
+
+    # plot_embeddings_2d(labeled_embeddings, UMAP(n_components=2))
+    # plot_embeddings_3d(labeled_embeddings, UMAP(n_components=3))
+    # plot_embeddings_map(labeled_embeddings, labeled_lat_lon, UMAP(n_components=3))
+
+    # plot_embeddings_2d(unlabeled_embeddings)
+    # plot_embeddings_3d(unlabeled_embeddings)
+    # plot_embeddings_map(unlabeled_embeddings, unlabeled_lat_lon)
+
+    # plot_embeddings_2d(unlabeled_embeddings, UMAP(n_components=2))
+    # plot_embeddings_3d(unlabeled_embeddings, UMAP(n_components=3))
+    # plot_embeddings_map(
+    #     unlabeled_embeddings, unlabeled_lat_lon, UMAP(n_components=3)
+    # )
