@@ -1,5 +1,7 @@
 data/
 
+lightning_logs/
+
 .env
 
 **/__pycache__/
