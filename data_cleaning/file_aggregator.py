@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     items: list[DataItem] = []
 
-    dir_lith_lab_emb = Config.DATA_DIR_LBL_LITH_EMB
+    dir_lith_lab_emb = Config.DATA_DIR_LBL_LITH_EMB_V2
     for file_name in os.listdir(dir_lith_lab_emb):
         if file_name.endswith(".npy"):
             lat, lon = decode_file(file_name)
@@ -43,7 +43,7 @@ if __name__ == "__main__":
             )
             items.append(item)
 
-    dir_lith_unlab_emb = Config.DATA_DIR_UNLBL_LITH_EMB
+    dir_lith_unlab_emb = Config.DATA_DIR_UNLBL_LITH_EMB_V2
     for file_name in os.listdir(dir_lith_unlab_emb):
         if file_name.endswith(".npy"):
             lat, lon = decode_file(file_name)
@@ -56,4 +56,4 @@ if __name__ == "__main__":
             )
             items.append(item)
 
-    write_dataclass_list_to_csv(items, "data/aggregation.csv")
+    write_dataclass_list_to_csv(items, Config.DATA_AGGREGATION_V2)
