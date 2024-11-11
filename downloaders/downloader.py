@@ -1,7 +1,7 @@
 from dem_adapter import *
 from sentinel2_adapter import *
 from lithology_adapter import *
-from file_utils import *
+from utils.file_utils import *
 import concurrent.futures
 import time
 from safe_adapter import *

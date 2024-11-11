@@ -9,20 +9,27 @@ from embeddings import *
 
 
 if __name__ == "__main__":
+    # labeled_embeddings, labeled_lat_lon = get_embeddings_and_locations(
+    #     Config.DATA_DIR_LBL_LITH_EMB, "npy"
+    # )
+    # unlabeled_embeddings, unlabeled_lat_lon = get_embeddings_and_locations(
+    #     Config.DATA_DIR_UNLBL_LITH_EMB, "npy"
+    # )
     labeled_embeddings, labeled_lat_lon = get_embeddings_and_locations(
-        Config.DATA_DIR_LBL_LITH_EMB, "npy"
+        "data/labeled/embeddings/lithology_v2", "npy"
     )
-    unlabeled_embeddings, unlabeled_lat_lon = get_embeddings_and_locations(
-        Config.DATA_DIR_UNLBL_LITH_EMB, "npy"
-    )
+
+    # unlabeled_embeddings, unlabeled_lat_lon = get_embeddings_and_locations(
+    #     "data/unlabeled/embeddings/lithology_v2", "npy"
+    # )
 
     # plot_labeled_unlabeled_embeddings_pca(
     #     labeled_embeddings, unlabeled_embeddings, UMAP(n_components=2)
     # )
 
-    # plot_embeddings_2d(labeled_embeddings)
-    # plot_embeddings_3d(labeled_embeddings)
-    # plot_embeddings_map(labeled_embeddings, labeled_lat_lon)
+    plot_embeddings_2d(labeled_embeddings)
+    plot_embeddings_3d(labeled_embeddings)
+    plot_embeddings_map(labeled_embeddings, labeled_lat_lon)
 
     # plot_embeddings_2d(unlabeled_embeddings)
     # plot_embeddings_3d(unlabeled_embeddings)

@@ -6,7 +6,7 @@ import numpy as np
 
 # Append the root directory of your project
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from downloaders.file_utils import *
+from utils.file_utils import *
 
 
 def compare_tif_files(dir1: str, dir2: str):

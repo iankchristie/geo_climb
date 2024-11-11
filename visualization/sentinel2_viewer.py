@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from matplotlib.axes import Axes
 import rasterio
 import numpy as np
-from downloaders.file_utils import *
+from utils.file_utils import *
 
 
 def view_sentinel2(

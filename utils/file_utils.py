@@ -63,7 +63,7 @@ def decode_file(file_name: str) -> list[float]:
     # Remove the file extension by splitting on the last period
     file_name, _ = os.path.splitext(file_name)
 
-    # Split the filename into parts by underscore
+    # Split the filena me into parts by underscore
     parts = file_name.split("_")
 
     # Assuming the last two parts are latitude and longitude

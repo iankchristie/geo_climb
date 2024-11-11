@@ -22,7 +22,7 @@ def extract_geologic_text(data):
     age = map_data.get("age", "")
     strat_name = map_data.get("strat_name", "")
     lith = map_data.get("lith", "")
-    descrip = map_data.get("descrip", "")
+    # descrip = map_data.get("descrip", "")
 
     lithologic_info = []
     for lith_entry in map_data.get("liths", []):
@@ -33,7 +33,8 @@ def extract_geologic_text(data):
 
     lithologic_info_str = "; ".join(lithologic_info)
 
-    return f"{name}. Age: {age}. Stratigraphy: {strat_name}. Lithology: {lith}. Description: {descrip}. Lithologic components: {lithologic_info_str}."
+    # return f"{name}. Age: {age}. Stratigraphy: {strat_name}. Lithology: {lith}. Description: {descrip}. Lithologic components: {lithologic_info_str}."
+    return f"{name}. Age: {age}. Stratigraphy: {strat_name}. Lithology: {lith}. Lithologic components: {lithologic_info_str}."
 
 
 def get_embedding(text: str):
@@ -84,7 +85,7 @@ def get_embedding(text: str):
 
 
 def write_embedding(embedding, file_name):
-    new_name = file_name.replace("lithology/", "embeddings/lithology/").replace(
+    new_name = file_name.replace("raw/lithology/", "embeddings/lithology_v2/").replace(
         ".json", ".npy"
     )
     new_directory = os.path.dirname(new_name)
@@ -93,11 +94,13 @@ def write_embedding(embedding, file_name):
 
 
 if __name__ == "__main__":
-    # directory = Config.DATA_DIR_LBL_LITH
-    directory = Config.DATA_DIR_UNLBL_LITH
+    directory = Config.DATA_DIR_LBL_LITH
+    # directory = Config.DATA_DIR_UNLBL_LITH
+    print(directory)
 
     for filename in glob.glob(os.path.join(directory, "*.json")):
         with open(filename, encoding="utf-8", mode="r") as currentFile:
+            print(filename)
             data = json.loads(currentFile.read())
             description = extract_geologic_text(data)
             embedding = get_embedding(description)
