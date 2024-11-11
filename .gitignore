@@ -3,7 +3,7 @@ data/
 lightning_logs/
 
 .env
-
+data/unlabeled/embeddings
 **/__pycache__/
 __pycache__/
 *.pyc
