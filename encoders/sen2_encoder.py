@@ -1,7 +1,6 @@
 import os
 import sys
 import torch
-import torchgeo
 from torchgeo.models import ResNet50_Weights
 from torchvision import transforms
 import numpy as np
@@ -11,7 +10,7 @@ from torchgeo.models import ResNet50_Weights
 from PIL import Image
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config.config import Config
-from downloaders.file_utils import *
+from utils.file_utils import *
 
 weights = ResNet50_Weights.SENTINEL2_RGB_MOCO
 
@@ -30,26 +29,27 @@ sentinel2_transforms = transforms.Compose([
 # Function to load and preprocess Sentinel-2 .tif images
 def process_sentinel2_image(image_path):
     with rasterio.open(image_path) as src:
-        image = src.read([1, 2, 3])  # Reading RGB channels (bands 1, 2, 3)
+        image = src.read([3, 2, 1])  # Reading RGB channels (bands 3, 2, 1)
         image = np.moveaxis(image, 0, -1)  # Change from (channels, height, width) to (height, width, channels)
-    
+
+    image = (image / image.max()) * 255
     # Convert to PIL Image for compatibility with torchvision transforms
     image_pil = Image.fromarray(image.astype(np.uint8))
     transformed_image = sentinel2_transforms(image_pil)
-    
     return transformed_image.unsqueeze(0)  # Add batch dimension
 
-def generate_N_save_embeddings(data:str,embeddings_dir:str):
+def generate_N_save_embeddings(type:str,data:str,embeddings_dir:str):
     for sen_file in os.listdir(data):
         os.makedirs(embeddings_dir,exist_ok=True)
         if sen_file.endswith('.tif'):
             lat,lon=decode_file(sen_file)
-            image_tensor = process_sentinel2_image(os.path.join(data,sen_file))  
+            image_tensor = process_sentinel2_image(os.path.join(data,sen_file))
+
             with torch.no_grad():
                 embeddings = model(image_tensor).squeeze()
-            
-            torch.save(embeddings, encode_file(lat,lon,'unlabelembds',embeddings_dir,'pt'))
+            prefix='unlabelembds' if type=="UNLABELLED" else 'labelembeds'
+            np.save(encode_file(lat,lon,prefix,embeddings_dir,'npy'),embeddings.numpy())
 
 if __name__=="__main__":
-    generate_N_save_embeddings(Config.DATA_DIR_LBL_SEN,Config.DATA_DIR_LBL_SEN_EMBEDS)
-    generate_N_save_embeddings(Config.DATA_DIR_UNLBL_SEN,Config.DATA_DIR_UNLBL_SEN_EMBEDS)
+    generate_N_save_embeddings("LABELLED",Config.DATA_DIR_LBL_SEN,Config.DATA_DIR_LBL_SEN_EMBEDS)
+    generate_N_save_embeddings("UNLABELLED",Config.DATA_DIR_UNLBL_SEN,Config.DATA_DIR_UNLBL_SEN_EMBEDS)
