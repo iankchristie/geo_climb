@@ -1,8 +1,14 @@
+import os
+import sys
 import torch
 from torch.utils.data import Dataset
 import pandas as pd
 import numpy as np
 from dataclasses import dataclass
+
+# Append the root directory of your project
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config.config import Config
 
 
 @dataclass
@@ -16,11 +22,11 @@ class DataItem:
 class GeoClimbDataset(Dataset):
     def __init__(self, split):
         if split == "training":
-            self.file_df = pd.read_csv("data/training.csv")
+            self.file_df = pd.read_csv(Config.DATA_TRAINING_V2)
         elif split == "validation":
-            self.file_df = pd.read_csv("data/validation.csv")
+            self.file_df = pd.read_csv(Config.DATA_VALIDATION_V2)
         elif split == "test":
-            self.file_df = pd.read_csv("data/test.csv")
+            self.file_df = pd.read_csv(Config.DATA_TEST_V2)
         else:
             raise Exception("Unknown Split Given")
 
