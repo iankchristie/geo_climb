@@ -4,7 +4,7 @@ import json
 import pdb
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from downloaders.file_utils import *
+from utils.file_utils import *
 
 
 def load_and_print_json_files(directory: str):
@@ -44,7 +44,6 @@ def load_and_print_json_files(directory: str):
                     print(f"Error reading {filename}: {e}")
     print(result[0:10])
     print(count_empty_map_data)
-
 
 def export_to_csv(data, output_file):
     """

@@ -7,7 +7,7 @@ import geopandas as gpd
 from shapely.geometry import Point
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from downloaders.file_utils import *
+from utils.file_utils import *
 from visualization.plot_us_map import *
 
 EARTH_RADIUS_KM = 6371.0

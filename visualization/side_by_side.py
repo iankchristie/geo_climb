@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from sentinel2_viewer import *
 from dem_viewer import *
 from lithology_viewer import *
-from downloaders.file_utils import *
+from utils.file_utils import *
 from config.config import Config
 
 
