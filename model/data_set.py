@@ -55,6 +55,5 @@ class GeoClimbDataset(Dataset):
 
     def __getitem__(self, idx):
         row: DataItem = self.data[idx]
-        data = row.lithology_data
         label = 1 if row.labeled else 0
-        return data, label
+        return row.lithology_data, label, row.latitude, row.longitude
