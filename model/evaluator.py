@@ -35,7 +35,7 @@ def labeled_unlabeled_analysis(model, test_set):
     labeled_unlabeled_roc(labeled_values, unlabeled_values)
 
 
-def model_performance_analysis(model, test_set, threshold=0.8):
+def model_performance_analysis(model, test_set, threshold=0.6):
     true_positive = []
     false_negative = []
     positive_prediction = []
@@ -81,8 +81,9 @@ def evaluate_model(model, test_set):
 
 
 if __name__ == "__main__":
+    test_set = GeoClimbDataset(split="test", data_types=["sentinel", "lithology"])
     model = GeoClimbModel.load_from_checkpoint(
-        "lightning_logs/version_2/checkpoints/epoch=49-step=27850.ckpt"
+        "lightning_logs/sentinel_lithology_1/checkpoints/epoch=49-step=27850.ckpt",
+        embedding_size=test_set.get_embedding_size(),
     )
-    test_set = GeoClimbDataset(split="test")
     evaluate_model(model, test_set)
