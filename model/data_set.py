@@ -24,11 +24,11 @@ class DataItem:
 class GeoClimbDataset(Dataset):
     def __init__(self, split, data_types=["lithology", "sentinel", "dem"]):
         if split == "training":
-            self.file_df = pd.read_csv(Config.DATA_TRAINING_V5)
+            self.file_df = pd.read_csv(Config.DATA_TRAINING_V6)
         elif split == "validation":
-            self.file_df = pd.read_csv(Config.DATA_VALIDATION_V5)
+            self.file_df = pd.read_csv(Config.DATA_VALIDATION_V6)
         elif split == "test":
-            self.file_df = pd.read_csv(Config.DATA_TEST_V5)
+            self.file_df = pd.read_csv(Config.DATA_TEST_V6)
         else:
             raise Exception("Unknown Split Given")
 
