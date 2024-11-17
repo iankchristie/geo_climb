@@ -92,7 +92,7 @@ if __name__ == "__main__":
             file_index[key] = value
 
     # Index labeled dem files
-    dir_dem_lbl_emb = Config.DATA_DIR_LBL_DEM_EMB
+    dir_dem_lbl_emb = Config.DATA_DIR_LBL_DEM_EMB_V2
     dem_index = index_files_by_lat_lon(dir_dem_lbl_emb, labeled=True)
     for key, value in dem_index.items():
         if key in file_index:
@@ -101,7 +101,7 @@ if __name__ == "__main__":
             file_index[key] = value
 
     # Index unlabled dem files
-    dir_dem_unlbl_emb = Config.DATA_DIR_UNLBL_DEM_EMB
+    dir_dem_unlbl_emb = Config.DATA_DIR_UNLBL_DEM_EMB_V2
     dem_index = index_files_by_lat_lon(dir_dem_unlbl_emb, labeled=False)
     for key, value in dem_index.items():
         if key in file_index:
@@ -127,4 +127,4 @@ if __name__ == "__main__":
             print(d)
 
     # Write the aggregated data to CSV
-    write_dataclass_list_to_csv(items, Config.DATA_AGGREGATION_V4)
+    write_dataclass_list_to_csv(items, Config.DATA_AGGREGATION_V5)
