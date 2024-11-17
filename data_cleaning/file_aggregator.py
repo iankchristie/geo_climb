@@ -17,6 +17,7 @@ class DataItem:
     labeled: bool
     lithology_filepath: str | None
     sentinel2_filepath: str | None
+    dem_filepath: str | None
 
 
 def write_dataclass_list_to_csv(data_items: List[DataItem], csv_filepath: str):
@@ -46,10 +47,13 @@ def index_files_by_lat_lon(
                     "labeled": labeled,
                     "lithology": None,
                     "sentinel2": None,
+                    "dem": None,
                 }
             # Add the lithology or sentinel2 path based on the directory type
             if "lith" in directory:
                 file_index[key]["lithology"] = file_path
+            elif "dem" in directory:
+                file_index[key]["dem"] = file_path
             else:
                 file_index[key]["sentinel2"] = file_path
     return file_index
@@ -87,6 +91,24 @@ if __name__ == "__main__":
         else:
             file_index[key] = value
 
+    # Index labeled dem files
+    dir_dem_lbl_emb = Config.DATA_DIR_LBL_DEM_EMB
+    dem_index = index_files_by_lat_lon(dir_dem_lbl_emb, labeled=True)
+    for key, value in dem_index.items():
+        if key in file_index:
+            file_index[key]["dem"] = value["dem"]
+        else:
+            file_index[key] = value
+
+    # Index unlabled dem files
+    dir_dem_unlbl_emb = Config.DATA_DIR_UNLBL_DEM_EMB
+    dem_index = index_files_by_lat_lon(dir_dem_unlbl_emb, labeled=False)
+    for key, value in dem_index.items():
+        if key in file_index:
+            file_index[key]["dem"] = value["dem"]
+        else:
+            file_index[key] = value
+
     # Convert indexed data into a list of DataItem objects
     items: list[DataItem] = []
     for (lat, lon), data in file_index.items():
@@ -96,6 +118,7 @@ if __name__ == "__main__":
             labeled=data["labeled"],
             lithology_filepath=data.get("lithology"),
             sentinel2_filepath=data.get("sentinel2"),
+            dem_filepath=data.get("dem"),
         )
         items.append(item)
 
@@ -104,4 +127,4 @@ if __name__ == "__main__":
             print(d)
 
     # Write the aggregated data to CSV
-    write_dataclass_list_to_csv(items, Config.DATA_AGGREGATION_V3)
+    write_dataclass_list_to_csv(items, Config.DATA_AGGREGATION_V4)
