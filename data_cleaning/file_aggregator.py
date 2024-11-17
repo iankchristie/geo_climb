@@ -74,7 +74,7 @@ if __name__ == "__main__":
     file_index.update(unlabeled_index)
 
     # Index labeled Sentinel-2 files
-    dir_sentinel2_lbl_emb = Config.DATA_DIR_LBL_SEN_EMB
+    dir_sentinel2_lbl_emb = Config.DATA_DIR_LBL_SEN_EMB_V2
     sentinel2_index = index_files_by_lat_lon(dir_sentinel2_lbl_emb, labeled=True)
     for key, value in sentinel2_index.items():
         if key in file_index:
@@ -83,7 +83,7 @@ if __name__ == "__main__":
             file_index[key] = value
 
     # Index unlabled Sentinel-2 files
-    dir_sentinel2_unlbl_emb = Config.DATA_DIR_UNLBL_SEN_EMB
+    dir_sentinel2_unlbl_emb = Config.DATA_DIR_UNLBL_SEN_EMB_V2
     sentinel2_index = index_files_by_lat_lon(dir_sentinel2_unlbl_emb, labeled=False)
     for key, value in sentinel2_index.items():
         if key in file_index:
@@ -127,4 +127,4 @@ if __name__ == "__main__":
             print(d)
 
     # Write the aggregated data to CSV
-    write_dataclass_list_to_csv(items, Config.DATA_AGGREGATION_V5)
+    write_dataclass_list_to_csv(items, Config.DATA_AGGREGATION_V6)

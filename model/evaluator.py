@@ -81,9 +81,9 @@ def evaluate_model(model, test_set):
 
 
 if __name__ == "__main__":
-    test_set = GeoClimbDataset(split="test", data_types=["dem", "lithology"])
+    test_set = GeoClimbDataset(split="test", data_types=["sentinel"])
     model = GeoClimbModel.load_from_checkpoint(
-        "lightning_logs/dem_lithology_2/checkpoints/epoch=49-step=27850.ckpt",
+        "lightning_logs/sen_rfc_gaussian/checkpoints/epoch=49-step=27850.ckpt",
         embedding_size=test_set.get_embedding_size(),
     )
     evaluate_model(model, test_set)
