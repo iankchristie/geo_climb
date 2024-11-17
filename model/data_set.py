@@ -18,16 +18,17 @@ class DataItem:
     labeled: bool
     lithology_data: torch.Tensor
     sentinel_data: torch.Tensor
+    dem_data: torch.Tensor
 
 
 class GeoClimbDataset(Dataset):
-    def __init__(self, split, data_types=["lithology", "sentinel"]):
+    def __init__(self, split, data_types=["lithology", "sentinel", "dem"]):
         if split == "training":
-            self.file_df = pd.read_csv(Config.DATA_TRAINING_V3)
+            self.file_df = pd.read_csv(Config.DATA_TRAINING_V4)
         elif split == "validation":
-            self.file_df = pd.read_csv(Config.DATA_VALIDATION_V3)
+            self.file_df = pd.read_csv(Config.DATA_VALIDATION_V4)
         elif split == "test":
-            self.file_df = pd.read_csv(Config.DATA_TEST_V3)
+            self.file_df = pd.read_csv(Config.DATA_TEST_V4)
         else:
             raise Exception("Unknown Split Given")
 
@@ -48,6 +49,7 @@ class GeoClimbDataset(Dataset):
                 labeled=bool(row["labeled"]),
                 lithology_data=self.load_data(row["lithology_filepath"]),
                 sentinel_data=self.load_data(row["sentinel2_filepath"]),
+                dem_data=self.load_data(row["dem_filepath"]),
             )
             data_items.append(data_item)
 
@@ -68,6 +70,7 @@ class GeoClimbDataset(Dataset):
         data_mapping = {
             "lithology": data_item.lithology_data,
             "sentinel": data_item.sentinel_data,
+            "dem": data_item.dem_data,
         }
 
         # Extract tensors based on the data_types list
@@ -90,13 +93,16 @@ class GeoClimbDataset(Dataset):
 
 
 if __name__ == "__main__":
-    lith_dataset = GeoClimbDataset(split="training", data_types=["lithology"])
-    print(lith_dataset.get_embedding_size())
+    dem_dataset = GeoClimbDataset(split="training", data_types=["dem"])
+    print(dem_dataset.get_embedding_size())
 
-    sen_dataset = GeoClimbDataset(split="training", data_types=["sentinel"])
-    print(sen_dataset.get_embedding_size())
+    # lith_dataset = GeoClimbDataset(split="training", data_types=["lithology"])
+    # print(lith_dataset.get_embedding_size())
 
-    both_dataset = GeoClimbDataset(
-        split="training", data_types=["lithology", "sentinel"]
-    )
-    print(both_dataset.get_embedding_size())
+    # sen_dataset = GeoClimbDataset(split="training", data_types=["sentinel"])
+    # print(sen_dataset.get_embedding_size())
+
+    # both_dataset = GeoClimbDataset(
+    #     split="training", data_types=["lithology", "sentinel"]
+    # )
+    # print(both_dataset.get_embedding_size())
