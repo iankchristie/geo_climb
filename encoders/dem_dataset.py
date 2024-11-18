@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config.config import Config
 from utils.file_utils import *
 from torchgeo.datasets import NonGeoDataset
+from encoders.dem_rcf import preprocess_dem
 
 
 class DEMDataset(NonGeoDataset):
@@ -35,30 +36,9 @@ class DEMDataset(NonGeoDataset):
             dem_data = src.read(1)
 
         # Preprocess the DEM data
-        dem_tensor = self.preprocess_dem(dem_data)
+        dem_tensor = preprocess_dem(dem_data)
 
         return {"image": dem_tensor}
-
-    def preprocess_dem(self, dem_data):
-        """
-        Normalize the DEM data and resize it to (18, 23).
-        """
-        # Subtract the minimum value to normalize the DEM data
-        min_value = np.min(dem_data)
-        normalized_data = dem_data - min_value
-
-        # Convert the normalized data to a float32 tensor
-        dem_tensor = (
-            torch.from_numpy(normalized_data).float().unsqueeze(0)
-        )  # Shape: (1, H, W)
-
-        # Resize the tensor to the target size (18, 23)
-        resize_transform = Resize((18, 23))
-        resized_tensor = resize_transform(dem_tensor.unsqueeze(0)).squeeze(
-            0
-        )  # Shape: (1, 18, 23)
-
-        return resized_tensor
 
 
 if __name__ == "__main__":

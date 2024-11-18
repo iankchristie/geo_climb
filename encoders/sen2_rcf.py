@@ -28,14 +28,8 @@ def get_embedding(sen_data, model):
     return embeddings.flatten()
 
 
-if __name__ == "__main__":
-    directory = Config.DATA_DIR_LBL_SEN
-    # directory = Config.DATA_DIR_UNLBL_SEN
-    embeddings_dir = "data/labeled/embeddings/sentinel_v2"
+def main(directory, embeddings_dir):
     os.makedirs(embeddings_dir, exist_ok=True)
-    print(directory)
-
-    # Initialize the RCF model
     model = RCF(in_channels=3, features=512, kernel_size=3, seed=42)
     model.eval()
 
@@ -57,3 +51,13 @@ if __name__ == "__main__":
             np.save(
                 encode_file(lat, lon, "sen", embeddings_dir, "npy"), embedding.numpy()
             )
+
+
+if __name__ == "__main__":
+    directory = Config.DATA_DIR_LBL_SEN
+    embeddings_dir = "data/labeled/embeddings/sentinel_v2"
+    main(directory, embeddings_dir)
+
+    directory = Config.DATA_DIR_UNLBL_SEN
+    embeddings_dir = "data/unlabeled/embeddings/sentinel_v2"
+    main(directory, embeddings_dir)
