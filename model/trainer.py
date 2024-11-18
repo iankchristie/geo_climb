@@ -1,12 +1,16 @@
+import os
+import sys
 import pytorch_lightning as pl
-from data_module import GeoClimbDataModule
-from model.evaluator import evaluate_model
-from lightning_module import GeoClimbModel
 from pytorch_lightning.loggers import TensorBoardLogger
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from model.geo_climb_data_module import GeoClimbDataModule
+from model.evaluator import evaluate_model
+from model.geo_climb_model import GeoClimbModel
 
 
 logger = TensorBoardLogger(
-    save_dir=".", name="lightning_logs", version="sen_rfc_gaussian"
+    save_dir=".", name="lightning_logs", version="sen_rfc_empirical"
 )
 
 data_module = GeoClimbDataModule(batch_size=32, data_types=["sentinel"])
