@@ -15,11 +15,11 @@ def split_csv_into_splits(csv_filepath: str):
     train_df, temp_df = train_test_split(df, test_size=0.3, random_state=42)
     val_df, test_df = train_test_split(temp_df, test_size=0.5, random_state=42)
 
-    train_df.to_csv(Config.DATA_TRAINING_V6, index=False)
-    val_df.to_csv(Config.DATA_VALIDATION_V6, index=False)
-    test_df.to_csv(Config.DATA_TEST_V6, index=False)
+    train_df.to_csv("data/training_split.csv", index=False)
+    val_df.to_csv("data/validation_split.csv", index=False)
+    test_df.to_csv("data/test_split.csv", index=False)
     print("Data split into training.csv, validation.csv, and test.csv")
 
 
 if __name__ == "__main__":
-    split_csv_into_splits(Config.DATA_AGGREGATION_V6)
+    split_csv_into_splits("data/all_lat_lons.csv")

@@ -1,7 +1,7 @@
 import pytorch_lightning as pl
 from typing import Optional
 from torch.utils.data import DataLoader
-from data_set import GeoClimbDataset
+from model.geo_climb_data_set import GeoClimbDataset
 
 
 class GeoClimbDataModule(pl.LightningDataModule):
