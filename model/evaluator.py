@@ -1,7 +1,5 @@
 import os
 import sys
-from lightning_module import GeoClimbModel
-from data_set import GeoClimbDataset
 from tqdm import tqdm
 import torch
 import numpy as np
@@ -9,6 +7,8 @@ import numpy as np
 # Append the root directory of your project
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from visualization.model_evaluation import *
+from model.geo_climb_model import GeoClimbModel
+from model.geo_climb_data_set import GeoClimbDataset
 
 
 def labeled_unlabeled_analysis(model, test_set):
@@ -83,7 +83,7 @@ def evaluate_model(model, test_set):
 if __name__ == "__main__":
     test_set = GeoClimbDataset(split="test", data_types=["sentinel"])
     model = GeoClimbModel.load_from_checkpoint(
-        "lightning_logs/sen_rfc_gaussian/checkpoints/epoch=49-step=27850.ckpt",
+        "lightning_logs/sen_rfc_empirical/checkpoints/epoch=49-step=27850.ckpt",
         embedding_size=test_set.get_embedding_size(),
     )
     evaluate_model(model, test_set)

@@ -1,30 +1,28 @@
 import sys
 import os
 import rasterio
-import torch
 import numpy as np
-from torchvision.transforms import ToTensor, Resize
 
 # Append the root directory of your project
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config.config import Config
 from utils.file_utils import *
 from torchgeo.datasets import NonGeoDataset
-from encoders.preprocess import preprocess_dem
+from encoders.preprocess import preprocess_sen
 
 
-class DEMDataset(NonGeoDataset):
+class SenDataset(NonGeoDataset):
     def __init__(self):
         self.file_paths = []
 
-        for file_name in os.listdir(Config.DATA_DIR_LBL_DEM):
+        for file_name in os.listdir(Config.DATA_DIR_LBL_SEN):
             if file_name.endswith(".tif"):
-                file_path = os.path.join(Config.DATA_DIR_LBL_DEM, file_name)
+                file_path = os.path.join(Config.DATA_DIR_LBL_SEN, file_name)
                 self.file_paths.append(file_path)
 
-        for file_name in os.listdir(Config.DATA_DIR_UNLBL_DEM):
+        for file_name in os.listdir(Config.DATA_DIR_UNLBL_SEN):
             if file_name.endswith(".tif"):
-                file_path = os.path.join(Config.DATA_DIR_UNLBL_DEM, file_name)
+                file_path = os.path.join(Config.DATA_DIR_UNLBL_SEN, file_name)
                 self.file_paths.append(file_path)
 
     def __len__(self):
@@ -33,16 +31,21 @@ class DEMDataset(NonGeoDataset):
     def __getitem__(self, idx):
         file_path = self.file_paths[idx]
         with rasterio.open(file_path) as src:
-            dem_data = src.read(1)
+            blue = src.read(1)  # Band 1 (B2: Blue)
+            green = src.read(2)  # Band 2 (B3: Green)
+            red = src.read(3)  # Band 3 (B4: Red)
+
+        # Stack the bands into a 3D array (R, G, B)
+        rgb = np.dstack((red, green, blue))
 
         # Preprocess the DEM data
-        dem_tensor = preprocess_dem(dem_data)
+        sen_tensor = preprocess_sen(rgb)
 
-        return {"image": dem_tensor}
+        return {"image": sen_tensor}
 
 
 if __name__ == "__main__":
-    dataset = DEMDataset()
+    dataset = SenDataset()
     h = []
     w = []
     for i in range(dataset.__len__()):

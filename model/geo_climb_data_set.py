@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config.config import Config
 from utils.file_utils import *
 
-SENTINEL_DIRECTORY = "sentinel_v2"
+SENTINEL_DIRECTORY = "sentinel_rcf_empirical"
 DEM_DIRECTORY = "dem_v2"
 LITHOLOGY_DIRECTORY = "lithology_v2"
 
