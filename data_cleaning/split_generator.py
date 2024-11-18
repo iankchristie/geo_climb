@@ -3,6 +3,7 @@ import sys
 import csv
 from dataclasses import dataclass, asdict
 from typing import List, Dict, Tuple
+from sklearn.model_selection import train_test_split
 
 # Append the root directory of your project
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -59,6 +60,22 @@ def index_files_by_lat_lon(
     return file_index
 
 
+def split_csv_into_splits(csv_filepath: str):
+    df = pd.read_csv(csv_filepath)
+
+    # Shuffle and split the data: 70% train, 15% validation, 15% test
+    train_df, temp_df = train_test_split(df, test_size=0.3, random_state=42)
+    val_df, test_df = train_test_split(temp_df, test_size=0.5, random_state=42)
+
+    train_df.to_csv("data/training_split.csv", index=False)
+    val_df.to_csv("data/validation_split.csv", index=False)
+    test_df.to_csv("data/test_split.csv", index=False)
+    print("Data split into training.csv, validation.csv, and test.csv")
+
+
+# Originally this was used to generate splits in a deprecated fashion. The new way is to
+# just use the training_split, validation_split, and test_split and dynamically create
+# the required files at test time.
 if __name__ == "__main__":
     # Index files from all relevant directories
     file_index = {}
@@ -128,3 +145,4 @@ if __name__ == "__main__":
 
     # Write the aggregated data to CSV
     write_dataclass_list_to_csv(items, "data/all_lat_lons.csv")
+    split_csv_into_splits("data/all_lat_lons.csv")
