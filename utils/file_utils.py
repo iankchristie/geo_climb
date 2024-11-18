@@ -47,8 +47,8 @@ def get_lat_lons_from_directory(directory: str) -> set[tuple[float, float]]:
 
 
 def encode_file(
-    latitude: float,
-    longitude: float,
+    latitude: float | str,
+    longitude: float | str,
     data: str,
     data_dir: str | None = None,
     file_type: str = "tif",
@@ -84,3 +84,10 @@ def delete_file(file_name, directory):
             print(f"Error deleting file '{file_name}': {e}")
     else:
         print(f"File '{file_name}' does not exist in the directory {directory}.")
+
+
+def os_safe_file_path(file_path):
+    if os.name == "nt":  # Check if the OS is Windows
+        return file_path.replace("/", "\\")
+    else:  # Ensure forward slashes for Unix-based systems (Linux, macOS)
+        return file_path.replace("\\", "/")

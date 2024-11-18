@@ -15,9 +15,9 @@ class DataItem:
     latitude: str
     longitude: str
     labeled: bool
-    lithology_filepath: str | None
-    sentinel2_filepath: str | None
-    dem_filepath: str | None
+    # lithology_filepath: str | None
+    # sentinel2_filepath: str | None
+    # dem_filepath: str | None
 
 
 def write_dataclass_list_to_csv(data_items: List[DataItem], csv_filepath: str):
@@ -116,15 +116,15 @@ if __name__ == "__main__":
             latitude=lat,
             longitude=lon,
             labeled=data["labeled"],
-            lithology_filepath=data.get("lithology"),
-            sentinel2_filepath=data.get("sentinel2"),
-            dem_filepath=data.get("dem"),
+            # lithology_filepath=data.get("lithology"),
+            # sentinel2_filepath=data.get("sentinel2"),
+            # dem_filepath=data.get("dem"),
         )
         items.append(item)
 
-    for d in items:
-        if not d.lithology_filepath or not d.sentinel2_filepath:
-            print(d)
+    # for d in items:
+    #     if not d.lithology_filepath or not d.sentinel2_filepath:
+    #         print(d)
 
     # Write the aggregated data to CSV
-    write_dataclass_list_to_csv(items, Config.DATA_AGGREGATION_V6)
+    write_dataclass_list_to_csv(items, "data/all_lat_lons.csv")
