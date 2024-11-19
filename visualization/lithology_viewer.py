@@ -40,7 +40,7 @@ def view_lithology(
         if not data:
             data["lith"] = ""
             data["liths"] = []
-        print(json.dumps(data, indent=4))
+        # print(json.dumps(data, indent=4))
 
     ax.text(
         0.5,

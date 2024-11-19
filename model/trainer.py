@@ -10,13 +10,13 @@ from model.geo_climb_model import GeoClimbModel
 
 
 logger = TensorBoardLogger(
-    save_dir=".", name="lightning_logs", version="sen_rfc_empirical"
+    save_dir=".", name="lightning_logs", version="sentinel_rcf_empirical"
 )
 
-data_module = GeoClimbDataModule(batch_size=32, data_types=["sentinel"])
+data_module = GeoClimbDataModule(batch_size=32, data_types=["dem"])
 embedding_size = data_module.get_embedding_size()
 model = GeoClimbModel(embedding_size)
-trainer = pl.Trainer(max_epochs=50, logger=logger, fast_dev_run=False)
+trainer = pl.Trainer(max_epochs=10, logger=logger, fast_dev_run=False)
 trainer.fit(model, datamodule=data_module)
 trainer.test(model, datamodule=data_module)
 

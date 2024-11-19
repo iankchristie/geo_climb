@@ -97,6 +97,7 @@ class GeoClimbDataset(Dataset):
     def __getitem__(self, idx):
         row: DataItem = self.data[idx]
         label = 1 if row.labeled else self.unlabeled_target()
+        # print(label)
         return self.get_concatenated_tensor(row), label, row.latitude, row.longitude
 
     def unlabeled_target(self):
