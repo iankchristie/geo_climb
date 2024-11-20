@@ -5,10 +5,10 @@ from model.geo_climb_data_set import GeoClimbDataset
 
 
 class GeoClimbDataModule(pl.LightningDataModule):
-    def __init__(self, batch_size: int = 32, data_types=["lithology", "sentinel"]):
+    def __init__(self, name_encoding: str, batch_size: int = 32):
         super().__init__()
         self.batch_size = batch_size
-        self.data_types = data_types
+        self.name_encoding = name_encoding
         self.train_dataset = None
         self.val_dataset = None
         self.test_dataset = None
@@ -20,15 +20,15 @@ class GeoClimbDataModule(pl.LightningDataModule):
         """
         if stage == "fit" or stage is None:
             self.train_dataset = GeoClimbDataset(
-                split="training", data_types=self.data_types
+                split="training", name_encoding=self.name_encoding
             )
             self.val_dataset = GeoClimbDataset(
-                split="validation", data_types=self.data_types
+                split="validation", name_encoding=self.name_encoding
             )
 
         if stage == "test" or stage is None:
             self.test_dataset = GeoClimbDataset(
-                split="test", data_types=self.data_types
+                split="test", name_encoding=self.name_encoding
             )
 
     def train_dataloader(self):
@@ -42,7 +42,7 @@ class GeoClimbDataModule(pl.LightningDataModule):
 
     def get_embedding_size(self) -> int:
         # Creating this is not ideal, but when we need to create the model we haven't actually "setup" the datamodule yet.
-        # So we can create a dummy dataset with the correct data_types.
+        # So we can create a dummy dataset with the correct name_encoding.
         return GeoClimbDataset(
-            split="test", data_types=self.data_types
+            split="test", name_encoding=self.name_encoding
         ).get_embedding_size()

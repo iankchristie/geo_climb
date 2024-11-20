@@ -73,6 +73,45 @@ def decode_file(file_name: str) -> list[float]:
     return [latitude, longitude]
 
 
+def find_encoded_file(
+    latitude: float | str, longitude: float | str, directory: str
+) -> str:
+    latitude_str = str(latitude)
+    longitude_str = str(longitude)
+
+    for filename in os.listdir(directory):
+        if latitude_str in filename and longitude_str in filename:
+            return os.path.join(directory, filename)
+
+    raise FileNotFoundError(
+        f"No file found in directory '{directory}' with latitude {latitude_str} and longitude {longitude_str}."
+    )
+
+
+def reverse_index(embedding_directory, labeled_directory, unlabeled_directory):
+    """
+    Build a reverse index of (latitude, longitude) -> file_path for all embedding directories.
+    """
+    reverse_index = {}
+
+    for directory_root in [labeled_directory, unlabeled_directory]:
+        full_directory = os.path.join(directory_root, embedding_directory)
+
+        if not os.path.exists(full_directory):
+            raise FileNotFoundError(f"Embedding directory not found: {full_directory}")
+
+        for file_name in os.listdir(full_directory):
+            if file_name.endswith(".npy"):
+                # Parse latitude and longitude from the filename
+                try:
+                    lat, lon = decode_file(file_name)
+                    reverse_index[(lat, lon)] = os.path.join(full_directory, file_name)
+                except ValueError:
+                    continue  # Skip files that don't match the expected format
+
+    return reverse_index
+
+
 def delete_file(file_name, directory):
     file_path = os.path.join(directory, file_name)
 

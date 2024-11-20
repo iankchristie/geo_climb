@@ -5,15 +5,12 @@ from torch.utils.data import Dataset
 import pandas as pd
 import numpy as np
 from dataclasses import dataclass
+from tqdm import tqdm
+import pdb
 
 # Append the root directory of your project
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config.config import Config
 from utils.file_utils import *
-
-SENTINEL_DIRECTORY = "sentinel_mosaiks"
-DEM_DIRECTORY = "dem_v2"
-LITHOLOGY_DIRECTORY = "lithology_v2"
 
 LABELED_DIRECTORY = os_safe_file_path("data/labeled/embeddings")
 UNLABELED_DIRECTORY = os_safe_file_path("data/unlabeled/embeddings")
@@ -24,13 +21,11 @@ class DataItem:
     latitude: str
     longitude: str
     labeled: bool
-    lithology_data: torch.Tensor | None
-    sentinel_data: torch.Tensor | None
-    dem_data: torch.Tensor | None
+    embeddings: torch.Tensor
 
 
 class GeoClimbDataset(Dataset):
-    def __init__(self, split, data_types=["lithology", "sentinel", "dem"]):
+    def __init__(self, split, name_encoding: str):
         if split == "training":
             self.file_df = pd.read_csv(os_safe_file_path("data/training_split.csv"))
         elif split == "validation":
@@ -40,52 +35,49 @@ class GeoClimbDataset(Dataset):
         else:
             raise Exception("Unknown Split Given")
 
-        self.data_types = data_types
+        self.embedding_directories = name_encoding.split("__")
+        self.reverse_index = self.build_reverse_index()
         self.data = self.data_from_csv(self.file_df)
 
-    def load_data(self, row, type) -> torch.Tensor:
-        latitude = str(row["latitude"])
-        longitude = str(row["longitude"])
-        labeled = bool(row["labeled"])
+    def build_reverse_index(self):
+        result = {}
+        for embedding_directory in self.embedding_directories:
+            result[embedding_directory] = reverse_index(
+                embedding_directory, LABELED_DIRECTORY, UNLABELED_DIRECTORY
+            )
+        return result
 
-        if labeled:
-            directory = LABELED_DIRECTORY
-        else:
-            directory = UNLABELED_DIRECTORY
+    def load_data(self, latitude, longitude, embedding_directory) -> torch.Tensor:
+        try:
+            file_path = self.reverse_index[embedding_directory][
+                (float(latitude), float(longitude))
+            ]
+        except KeyError:
+            print(
+                f"Data not found for latitude {latitude} and longitude {longitude} in {embedding_directory}"
+            )
+            return torch.tensor([], dtype=torch.float32)
 
-        if type == "sen":
-            file_path = os.path.join(directory, SENTINEL_DIRECTORY)
-        elif type == "dem":
-            file_path = os.path.join(directory, DEM_DIRECTORY)
-        else:
-            file_path = os.path.join(directory, LITHOLOGY_DIRECTORY)
-
-        full_file_path = encode_file(latitude, longitude, type, file_path, "npy")
-
-        np_data = np.load(full_file_path)
+        np_data = np.load(file_path)
         return torch.tensor(np_data, dtype=torch.float32)
 
     def data_from_csv(self, df: pd.DataFrame) -> list[DataItem]:
         data_items = []
 
-        for _, row in df.iterrows():
+        for _, row in tqdm(df.iterrows(), total=len(df), desc="Building Dataset"):
+            latitude = str(row["latitude"])
+            longitude = str(row["longitude"])
+            labeled = bool(row["labeled"])
+            embeddings = [
+                self.load_data(latitude, longitude, embedding_directory)
+                for embedding_directory in self.embedding_directories
+            ]
+            concatenated_tensor = torch.concat(embeddings)
             data_item = DataItem(
-                latitude=str(row["latitude"]),
-                longitude=str(row["longitude"]),
-                labeled=bool(row["labeled"]),
-                lithology_data=(
-                    self.load_data(row, "lit")
-                    if "lithology" in self.data_types
-                    else None
-                ),
-                sentinel_data=(
-                    self.load_data(row, "sen")
-                    if "sentinel" in self.data_types
-                    else None
-                ),
-                dem_data=(
-                    self.load_data(row, "dem") if "dem" in self.data_types else None
-                ),
+                latitude=latitude,
+                longitude=longitude,
+                labeled=labeled,
+                embeddings=concatenated_tensor,
             )
             data_items.append(data_item)
 
@@ -97,33 +89,10 @@ class GeoClimbDataset(Dataset):
     def __getitem__(self, idx):
         row: DataItem = self.data[idx]
         label = 1 if row.labeled else self.unlabeled_target()
-        # print(label)
-        return self.get_concatenated_tensor(row), label, row.latitude, row.longitude
+        return row.embeddings, label, row.latitude, row.longitude
 
     def unlabeled_target(self):
         return 0
-
-    def get_concatenated_tensor(self, data_item: DataItem) -> torch.Tensor:
-        data_mapping = {
-            "lithology": data_item.lithology_data,
-            "sentinel": data_item.sentinel_data,
-            "dem": data_item.dem_data,
-        }
-
-        # Extract tensors based on the data_types list
-        tensors_to_concat = [
-            data_mapping[data_type]
-            for data_type in self.data_types
-            if data_type in data_mapping
-        ]
-
-        # Concatenate the selected tensors along the feature dimension (usually dim=1 for 2D tensors)
-        if tensors_to_concat:
-            concatenated_tensor = torch.cat(tensors_to_concat, dim=0)
-        else:
-            raise ValueError("No valid data types provided for concatenation.")
-
-        return concatenated_tensor
 
     def get_embedding_size(self) -> int:
         return self.__getitem__(0)[0].shape[0]
@@ -131,7 +100,7 @@ class GeoClimbDataset(Dataset):
 
 if __name__ == "__main__":
     dataset = GeoClimbDataset(
-        split="training", data_types=["dem", "sentinel", "lithology"]
+        split="training", name_encoding="dem_v2__lithology_v2__sentinel_mosaiks"
     )
     print(dataset.get_embedding_size())
 
