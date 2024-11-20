@@ -82,9 +82,13 @@ def evaluate_model(model, test_set):
 
 
 if __name__ == "__main__":
-    test_set = GeoClimbDataset(split="test", data_types=["sentinel"])
+    checkpoint_path = (
+        "lightning_logs/sentinel_mosaiks_2/checkpoints/epoch=99-step=55700.ckpt"
+    )
+    name_encoding = checkpoint_path.split("/")[1]
+    test_set = GeoClimbDataset(split="test", name_encoding=name_encoding)
     model = GeoClimbModel.load_from_checkpoint(
-        "lightning_logs/sentinel_mosaiks_2/checkpoints/epoch=99-step=55700.ckpt",
+        checkpoint_path,
         embedding_size=test_set.get_embedding_size(),
     )
     evaluate_model(model, test_set)
