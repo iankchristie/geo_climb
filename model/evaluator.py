@@ -76,6 +76,7 @@ def model_performance_analysis(model, test_set, threshold=0.6):
 
 def evaluate_model(model, test_set):
     model.eval()
+    model = model.to("mps")
     labeled_unlabeled_analysis(model, test_set)
     model_performance_analysis(model, test_set)
 
@@ -83,7 +84,7 @@ def evaluate_model(model, test_set):
 if __name__ == "__main__":
     test_set = GeoClimbDataset(split="test", data_types=["sentinel"])
     model = GeoClimbModel.load_from_checkpoint(
-        "lightning_logs/sen_rfc_empirical_v2/checkpoints/epoch=24-step=13925.ckpt",
+        "lightning_logs/sentinel_mosaiks_2/checkpoints/epoch=99-step=55700.ckpt",
         embedding_size=test_set.get_embedding_size(),
     )
     evaluate_model(model, test_set)
