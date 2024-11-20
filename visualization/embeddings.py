@@ -7,6 +7,7 @@ from sklearn.decomposition import PCA
 import numpy as np
 import os
 import sys
+import pdb
 
 
 # Append the root directory of your project
@@ -150,12 +151,14 @@ if __name__ == "__main__":
     # )
 
     labeled_embeddings, labeled_lat_lon = get_embeddings_and_locations(
-        "data/labeled/embeddings/lithology_v2", "npy"
+        "data/labeled/embeddings/sentinel_mosaiks", "npy"
     )
 
     unlabeled_embeddings, unlabeled_lat_lon = get_embeddings_and_locations(
-        "data/unlabeled/embeddings/lithology_v2", "npy"
+        "data/unlabeled/embeddings/sentinel_mosaiks", "npy"
     )
+
+    # pdb.set_trace()
 
     plot_labeled_unlabeled_embeddings_pca(
         labeled_embeddings, unlabeled_embeddings, UMAP(n_components=2)
