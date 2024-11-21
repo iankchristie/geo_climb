@@ -53,10 +53,26 @@ Encoders produce embeddings from raw data. It is key that these embeddings follo
 <descriptive_directory_name>/<data_type {dem, sen, lit}>_<lat>_<lon>.npy
 ```
 
+We currently provide embeddings for:
+
+Sentinel2:
+
+- gaussian RCF
+- empirical RCF
+- MOSAIKS
+
+DEM:
+
+- gaussian RCF
+- empirical RCF
+
+Lithology:
+
+- SciBERT Encoding including description
+- SciBERT Encoding excluding description
+
 ## Model
 
 The model is entirely defined by the `model/config.yml`. The datasets are generified so that all that is required to use them is to provide a list of embedding directories.
 
-## Evaluation
-
-There is an evaluation script to evaluate the model.
+The name of the experiment will be a contatenation of the embedding directories. This is the key that the dataset and evaluation scripts require.
