@@ -1,24 +1,40 @@
 import os
 import sys
 import pytorch_lightning as pl
-from pytorch_lightning.loggers import TensorBoardLogger
+import yaml
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from model.geo_climb_data_module import GeoClimbDataModule
 from model.evaluator import evaluate_model
 from model.geo_climb_model import GeoClimbModel
-from torchgeo import trainers
 from pytorch_lightning.loggers import WandbLogger
 
-EMBEDDING_DIRECTORIES = ["sentinel_mosaiks", "dem_v2", "lithology_v2"]
-name = "__".join(EMBEDDING_DIRECTORIES)
+with open("config.yml", "r") as file:
+    config = yaml.safe_load(file)
+
+# Extract hyperparameters
+project_name = config["project_name"]
+embedding_directories = config["embedding_directories"]
+hyperparameters = config["hyperparameters"]
+
+name = "__".join(embedding_directories)
+batch_size = hyperparameters["batch_size"]
+max_epochs = hyperparameters["max_epochs"]
+learning_rate = hyperparameters["learning_rate"]
 
 wandb_logger = WandbLogger(project="geo-climb", name=name)
+wandb_logger.experiment.config.update(
+    {
+        "embedding_directories": embedding_directories,
+        "batch_size": batch_size,
+        "max_epochs": max_epochs,
+    }
+)
 
-data_module = GeoClimbDataModule(batch_size=32, name_encoding=name)
+data_module = GeoClimbDataModule(batch_size=batch_size, name_encoding=name)
 embedding_size = data_module.get_embedding_size()
-model = GeoClimbModel(embedding_size)
-trainer = pl.Trainer(max_epochs=100, logger=wandb_logger, fast_dev_run=False)
+model = GeoClimbModel(embedding_size, learning_rate=learning_rate)
+trainer = pl.Trainer(max_epochs=max_epochs, logger=wandb_logger, fast_dev_run=False)
 trainer.fit(model, datamodule=data_module)
 trainer.test(model, datamodule=data_module)
 
