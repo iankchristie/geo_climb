@@ -9,7 +9,7 @@ from model.evaluator import evaluate_model
 from model.geo_climb_model import GeoClimbModel
 from pytorch_lightning.loggers import WandbLogger
 
-with open("config.yml", "r") as file:
+with open("model/config.yml", "r") as file:
     config = yaml.safe_load(file)
 
 # Extract hyperparameters
