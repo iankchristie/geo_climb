@@ -151,11 +151,11 @@ if __name__ == "__main__":
     # )
 
     labeled_embeddings, labeled_lat_lon = get_embeddings_and_locations(
-        "data/labeled/embeddings/sentinel_mosaiks", "npy"
+        "data/labeled/embeddings/sen_flattened", "npy"
     )
 
     unlabeled_embeddings, unlabeled_lat_lon = get_embeddings_and_locations(
-        "data/unlabeled/embeddings/sentinel_mosaiks", "npy"
+        "data/unlabeled/embeddings/sen_flattened", "npy"
     )
 
     # pdb.set_trace()

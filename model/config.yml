@@ -1,6 +1,8 @@
 project_name: "geo-climb"
 embedding_directories:
-  - "sentinel_rcf_gaussian"
+  - "dem_rcf_empirical"
+  - "lithology_scibert_no_description"
+  # - "sentinel_mosaiks"
 
 hyperparameters:
   batch_size: 32
