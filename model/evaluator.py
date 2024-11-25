@@ -3,6 +3,7 @@ import sys
 from tqdm import tqdm
 import torch
 import numpy as np
+import wandb
 
 # Append the root directory of your project
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -82,13 +83,33 @@ def evaluate_model(model, test_set):
 
 
 if __name__ == "__main__":
-    checkpoint_path = (
-        "lightning_logs/sentinel_mosaiks_2/checkpoints/epoch=99-step=55700.ckpt"
-    )
-    name_encoding = checkpoint_path.split("/")[1]
+    checkpoint_path = "geo-climb/u3qsiodi/checkpoints/epoch=49-step=27850.ckpt"
+    name_encoding = "dem_rcf_gaussian"
     test_set = GeoClimbDataset(split="test", name_encoding=name_encoding)
     model = GeoClimbModel.load_from_checkpoint(
         checkpoint_path,
         embedding_size=test_set.get_embedding_size(),
     )
     evaluate_model(model, test_set)
+    # api = wandb.Api()
+
+    # # Specify the project and run ID
+    # project = "geo-climb"  # Replace with your project name
+    # entity = "iankchristie-cu-boulder"
+    # run_id = "1cpwznrp"  # Replace with the specific run ID
+
+    # # runs = api.runs(
+    # #     "iankchristie-cu-boulder/geo-climb"
+    # # )  # Replace with your entity/project
+    # # for run in runs:
+    # #     print(f"Run ID: {run.id}, Name: {run.name}")
+
+    # # Access the run
+    # run = api.run(f"{entity}/{project}/{run_id}")
+
+    # # List files in the run
+    # for file in run.files():
+    #     print(file.name)  # Lists all available files
+
+    # Download a specific checkpoint file
+    # checkpoint_file = "model.ckpt"  # Replace with the actual checkpoint file name
