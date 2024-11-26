@@ -12,7 +12,7 @@ from model.geo_climb_model import GeoClimbModel
 from model.geo_climb_data_set import GeoClimbDataset
 
 
-def labeled_unlabeled_analysis(model, test_set):
+def labeled_unlabeled_analysis(model, test_set, device):
     labeled_values = []
     unlabeled_values = []
 
@@ -20,7 +20,7 @@ def labeled_unlabeled_analysis(model, test_set):
     with torch.no_grad():
         for idx in tqdm(range(len(test_set)), desc="Testing"):
             data, label, _, _ = test_set[idx]
-            data = data.to(device="mps")
+            data = data.to(device)
 
             data = data.unsqueeze(0)
 
@@ -36,7 +36,7 @@ def labeled_unlabeled_analysis(model, test_set):
     labeled_unlabeled_roc(labeled_values, unlabeled_values)
 
 
-def model_performance_analysis(model, test_set, threshold=0.6):
+def model_performance_analysis(model, test_set, device, threshold=0.6):
     true_positive = []
     false_negative = []
     positive_prediction = []
@@ -47,7 +47,7 @@ def model_performance_analysis(model, test_set, threshold=0.6):
         for idx in tqdm(range(len(test_set)), desc="Testing"):
             data, label, lat, lon = test_set[idx]
             geo_point = (lat, lon)
-            data = data.to(device="mps")
+            data = data.to(device)
 
             data = data.unsqueeze(0)
 
@@ -76,10 +76,20 @@ def model_performance_analysis(model, test_set, threshold=0.6):
 
 
 def evaluate_model(model, test_set):
+    if torch.cuda.is_available():
+        device = torch.device("cuda")  # Use CUDA-enabled GPU
+        print("Using CUDA for GPU acceleration.")
+    elif torch.backends.mps.is_available():
+        device = torch.device("mps")  # Use Metal Performance Shaders on macOS
+        print("Using MPS for GPU acceleration on macOS.")
+    else:
+        device = torch.device("cpu")  # Fallback to CPU
+        print("Using CPU as no GPU acceleration is available.")
+    model = model.to(device)
     model.eval()
-    model = model.to("mps")
-    labeled_unlabeled_analysis(model, test_set)
-    model_performance_analysis(model, test_set)
+    
+    labeled_unlabeled_analysis(model, test_set, device)
+    model_performance_analysis(model, test_set, device=device)
 
 
 if __name__ == "__main__":
