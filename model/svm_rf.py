@@ -4,13 +4,13 @@ from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, classification_report
 from geo_climb_data_set import *
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from visualization.svm_rf import *
 from tqdm import tqdm
 
-wandb.init(project="geo-climb", name="combined", entity="", config={"random_state": 42})
+wandb.init(project="geo-climb", name="combined_embeddings", entity="iankchristie-cu-boulder", config={"random_state": 42})
 
 train_data=GeoClimbDataset("training","combined").data
 X_train=[]
@@ -39,7 +39,7 @@ for i in range(len(test_data)):
 X_testNumpy=np.array(X_test)
 y_testNumpy=np.array(y_test)
 
-svm = SVC(probability=True, kernel="linear", random_state=42)
+svm = SVC(probability=True, kernel="linear", verbose=True, random_state=42)
 
 print("Training SVM")
 # Train the model
@@ -63,6 +63,7 @@ for model_name, model in models.items():
     recall = recall_score(y_testNumpy, y_pred)
     f1 = f1_score(y_testNumpy, y_pred)
     roc=roc_auc_score(y_testNumpy,y_pred)
+    classification_rpt=classification_report(y_testNumpy,y_pred)
 
     # Log metrics to W&B
     wandb.log({
@@ -71,15 +72,17 @@ for model_name, model in models.items():
         "precision": precision,
         "recall": recall,
         "f1_score": f1,
-        "roc_auc_score":roc
+        "roc_auc_score":roc,
+        "classification_report":classification_rpt
     })
-
+    
     cm = confusion_matrix(y_testNumpy, y_pred)
-
+    cm_normalized = cm.astype('float') / cm.sum(axis=1, keepdims=True) * 100
     # Visualize the confusion matrix
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=model.classes_)
-    disp.plot(cmap=plt.cm.Blues)
-    plt.title("Confusion Matrix")
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm_normalized, display_labels=model.classes_)
+    fig, ax = plt.subplots(figsize=(6, 6))
+    disp.plot(ax=ax, cmap='Blues', values_format=".2f")
+    plt.title(f"Confusion Matrix : {model_name} Classifier")
     plt.show()
 
     visualize_predictions(y_testNumpy,y_pred,model.predict_proba(X_testNumpy),model_name)
