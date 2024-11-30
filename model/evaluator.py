@@ -36,7 +36,7 @@ def labeled_unlabeled_analysis(model, test_set, device):
     labeled_unlabeled_roc(labeled_values, unlabeled_values)
 
 
-def model_performance_analysis(model, test_set, device, threshold=0.6):
+def model_performance_analysis(model, test_set, device, threshold=0.9):
     true_positive = []
     false_negative = []
     positive_prediction = []
@@ -46,12 +46,12 @@ def model_performance_analysis(model, test_set, device, threshold=0.6):
     with torch.no_grad():
         for idx in tqdm(range(len(test_set)), desc="Testing"):
             data, label, lat, lon = test_set[idx]
-            geo_point = (lat, lon)
             data = data.to(device)
 
             data = data.unsqueeze(0)
 
             prediction = model(data).item()
+            geo_point = (lat, lon, prediction)
             # USE ROC plotting below to determine the correct threshold.
             # Convert the prediction to a binary label (0 or 1) using a threshold
             predicted_label = 1 if prediction > threshold else 0
@@ -67,6 +67,9 @@ def model_performance_analysis(model, test_set, device, threshold=0.6):
                     positive_prediction.append(geo_point)
                 else:
                     negative_prediction.append(geo_point)
+    top_positive_predictions = sorted(positive_prediction, key=lambda x: -x[2])
+    print(top_positive_predictions)
+
     print_confusion_metrics(
         true_positive, false_negative, positive_prediction, negative_prediction
     )
@@ -87,14 +90,16 @@ def evaluate_model(model, test_set):
         print("Using CPU as no GPU acceleration is available.")
     model = model.to(device)
     model.eval()
-    
+
     labeled_unlabeled_analysis(model, test_set, device)
     model_performance_analysis(model, test_set, device=device)
 
 
 if __name__ == "__main__":
-    checkpoint_path = "geo-climb/u3qsiodi/checkpoints/epoch=49-step=27850.ckpt"
-    name_encoding = "dem_rcf_gaussian"
+    checkpoint_path = "geo-climb/3niq79vr/checkpoints/epoch=49-step=27850.ckpt"
+    name_encoding = (
+        "dem_rcf_empirical__lithology_scibert_no_description__sentinel_mosaiks"
+    )
     test_set = GeoClimbDataset(split="test", name_encoding=name_encoding)
     model = GeoClimbModel.load_from_checkpoint(
         checkpoint_path,
@@ -108,11 +113,11 @@ if __name__ == "__main__":
     # entity = "iankchristie-cu-boulder"
     # run_id = "1cpwznrp"  # Replace with the specific run ID
 
-    # # runs = api.runs(
-    # #     "iankchristie-cu-boulder/geo-climb"
-    # # )  # Replace with your entity/project
-    # # for run in runs:
-    # #     print(f"Run ID: {run.id}, Name: {run.name}")
+    # runs = api.runs(
+    #     "iankchristie-cu-boulder/geo-climb"
+    # )  # Replace with your entity/project
+    # for run in runs:
+    #     print(f"Run ID: {run.id}, Name: {run.name}")
 
     # # Access the run
     # run = api.run(f"{entity}/{project}/{run_id}")
