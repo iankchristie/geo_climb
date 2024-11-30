@@ -60,11 +60,13 @@ Sentinel2:
 - gaussian RCF
 - empirical RCF
 - MOSAIKS
+- flattened
 
 DEM:
 
 - gaussian RCF
 - empirical RCF
+- flattened
 
 Lithology:
 
