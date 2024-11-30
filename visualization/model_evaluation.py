@@ -19,7 +19,7 @@ def plot_interactive_metrics_geo(
         def plot_class(points, color, label):
             # Plot a single point first for the legend. This is so that the legend doesn't contain an item for every point
             if points:
-                lat, lon = points[0]
+                lat, lon, _ = points[0]
                 ax.plot(
                     float(lon),
                     float(lat),
@@ -31,7 +31,7 @@ def plot_interactive_metrics_geo(
                 )
 
             # Plot the rest of the points without a label
-            for lat, lon in points[1:]:
+            for lat, lon, _ in points[1:]:
                 ax.plot(
                     float(lon),
                     float(lat),
