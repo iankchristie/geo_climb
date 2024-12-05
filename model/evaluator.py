@@ -96,28 +96,28 @@ def evaluate_model(model, test_set):
 
 
 if __name__ == "__main__":
-    checkpoint_path = "geo-climb/3niq79vr/checkpoints/epoch=49-step=27850.ckpt"
-    name_encoding = (
-        "dem_rcf_empirical__lithology_scibert_no_description__sentinel_mosaiks"
-    )
-    test_set = GeoClimbDataset(split="test", name_encoding=name_encoding)
-    model = GeoClimbModel.load_from_checkpoint(
-        checkpoint_path,
-        embedding_size=test_set.get_embedding_size(),
-    )
-    evaluate_model(model, test_set)
-    # api = wandb.Api()
+    # checkpoint_path = "geo-climb/3niq79vr/checkpoints/epoch=49-step=27850.ckpt"
+    # name_encoding = (
+    #     "dem_rcf_empirical__lithology_scibert_no_description__sentinel_mosaiks"
+    # )
+    # test_set = GeoClimbDataset(split="test", name_encoding=name_encoding)
+    # model = GeoClimbModel.load_from_checkpoint(
+    #     checkpoint_path,
+    #     embedding_size=test_set.get_embedding_size(),
+    # )
+    # evaluate_model(model, test_set)
+    api = wandb.Api()
 
-    # # Specify the project and run ID
-    # project = "geo-climb"  # Replace with your project name
-    # entity = "iankchristie-cu-boulder"
-    # run_id = "1cpwznrp"  # Replace with the specific run ID
+    # Specify the project and run ID
+    project = "geo-climb"  # Replace with your project name
+    entity = "iankchristie-cu-boulder"
+    run_id = "1cpwznrp"  # Replace with the specific run ID
 
-    # runs = api.runs(
-    #     "iankchristie-cu-boulder/geo-climb"
-    # )  # Replace with your entity/project
-    # for run in runs:
-    #     print(f"Run ID: {run.id}, Name: {run.name}")
+    runs = api.runs(
+        "iankchristie-cu-boulder/geo-climb"
+    )  # Replace with your entity/project
+    for run in runs:
+        print(f"Run ID: {run.id}, Name: {run.name}")
 
     # # Access the run
     # run = api.run(f"{entity}/{project}/{run_id}")
