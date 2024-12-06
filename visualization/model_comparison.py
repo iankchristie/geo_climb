@@ -4,6 +4,7 @@ from joblib import load
 import numpy as np
 from sklearn.metrics import cohen_kappa_score
 import torch
+import pdb
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -12,12 +13,16 @@ from model.geo_climb_model import GeoClimbModel
 
 
 def sort_data_by_lat_lon(data):
-    return sorted(data, key=lambda item: (item.latitude, item.longitude))
+    return [
+        item
+        for item in sorted(data, key=lambda item: (item.latitude, item.longitude))
+        if not item.labeled
+    ]
 
 
 def prepare_geo_climb_model_predictions(checkpoint_path, dataset):
     sorted_data = sort_data_by_lat_lon(dataset.data)
-    embeddings = [item.embeddings for item in sorted_data if not item.labeled]
+    embeddings = [item.embeddings for item in sorted_data]
     tensor_data = torch.tensor(np.array(embeddings), dtype=torch.float32, device="mps")
 
     model = GeoClimbModel.load_from_checkpoint(
@@ -34,7 +39,7 @@ def prepare_geo_climb_model_predictions(checkpoint_path, dataset):
 
 def prepare_svm_rf_predictions(model_path, dataset):
     sorted_data = sort_data_by_lat_lon(dataset.data)
-    embeddings = [item.embeddings for item in sorted_data if not item.labeled]
+    embeddings = [item.embeddings for item in sorted_data]
     embeddings_array = np.array(embeddings)
 
     model = load(model_path)

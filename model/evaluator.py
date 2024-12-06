@@ -61,12 +61,31 @@ def model_performance_analysis(model, test_set, device, threshold=0.9):
                     true_positive.append(geo_point)
                 else:
                     false_negative.append(geo_point)
-
             else:
                 if predicted_label == 1:
                     positive_prediction.append(geo_point)
                 else:
                     negative_prediction.append(geo_point)
+
+    # Calculate NPV
+    true_negative = len(negative_prediction)
+    false_negative_count = len(false_negative)
+
+    if true_negative + false_negative_count > 0:
+        npv = true_negative / (true_negative + false_negative_count)
+    else:
+        npv = float("nan")  # Handle cases where denominator is zero
+
+    print(f"Negative Predictive Value (NPV): {npv:.4f}")
+
+    # Calculate False Negative Rate (FNR) for Negative Predictions
+    if true_negative + false_negative_count > 0:
+        fnr = false_negative_count / (true_negative + false_negative_count)
+    else:
+        fnr = float("nan")  # Handle cases where denominator is zero
+
+    print(f"False Negative Rate (FNR) for Negative Predictions: {fnr:.4f}")
+
     top_positive_predictions = sorted(positive_prediction, key=lambda x: -x[2])
     print(top_positive_predictions)
 
@@ -96,28 +115,28 @@ def evaluate_model(model, test_set):
 
 
 if __name__ == "__main__":
-    # checkpoint_path = "geo-climb/3niq79vr/checkpoints/epoch=49-step=27850.ckpt"
-    # name_encoding = (
-    #     "dem_rcf_empirical__lithology_scibert_no_description__sentinel_mosaiks"
-    # )
-    # test_set = GeoClimbDataset(split="test", name_encoding=name_encoding)
-    # model = GeoClimbModel.load_from_checkpoint(
-    #     checkpoint_path,
-    #     embedding_size=test_set.get_embedding_size(),
-    # )
-    # evaluate_model(model, test_set)
-    api = wandb.Api()
+    checkpoint_path = "geo-climb/3niq79vr/checkpoints/epoch=49-step=27850.ckpt"
+    name_encoding = (
+        "dem_rcf_empirical__lithology_scibert_no_description__sentinel_mosaiks"
+    )
+    test_set = GeoClimbDataset(split="test", name_encoding=name_encoding)
+    model = GeoClimbModel.load_from_checkpoint(
+        checkpoint_path,
+        embedding_size=test_set.get_embedding_size(),
+    )
+    evaluate_model(model, test_set)
+    # api = wandb.Api()
 
-    # Specify the project and run ID
-    project = "geo-climb"  # Replace with your project name
-    entity = "iankchristie-cu-boulder"
-    run_id = "1cpwznrp"  # Replace with the specific run ID
+    # # Specify the project and run ID
+    # project = "geo-climb"  # Replace with your project name
+    # entity = "iankchristie-cu-boulder"
+    # run_id = "1cpwznrp"  # Replace with the specific run ID
 
-    runs = api.runs(
-        "iankchristie-cu-boulder/geo-climb"
-    )  # Replace with your entity/project
-    for run in runs:
-        print(f"Run ID: {run.id}, Name: {run.name}")
+    # runs = api.runs(
+    #     "iankchristie-cu-boulder/geo-climb"
+    # )  # Replace with your entity/project
+    # for run in runs:
+    #     print(f"Run ID: {run.id}, Name: {run.name}")
 
     # # Access the run
     # run = api.run(f"{entity}/{project}/{run_id}")
