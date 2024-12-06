@@ -86,7 +86,9 @@ def plot_embeddings_map(embeddings, lat_lon, reducer=PCA(n_components=3)):
             transform=ccrs.PlateCarree(),
         )
 
-    plt.title("Geologic Embeddings Color-coded by Reduced Components")
+    plt.title(
+        "Geologic Embeddings Without Description Color-coded by Reduced Components"
+    )
     plt.show()
 
 
@@ -151,25 +153,23 @@ if __name__ == "__main__":
     # )
 
     labeled_embeddings, labeled_lat_lon = get_embeddings_and_locations(
-        "data/labeled/embeddings/sen_flattened", "npy"
+        "data/labeled/embeddings/lithology_scibert_decription", "npy"
     )
 
     unlabeled_embeddings, unlabeled_lat_lon = get_embeddings_and_locations(
-        "data/unlabeled/embeddings/sen_flattened", "npy"
+        "data/unlabeled/embeddings/lithology_scibert_no_description", "npy"
     )
 
-    # pdb.set_trace()
+    # plot_labeled_unlabeled_embeddings_pca(
+    #     labeled_embeddings, unlabeled_embeddings, UMAP(n_components=2)
+    # )
 
-    plot_labeled_unlabeled_embeddings_pca(
-        labeled_embeddings, unlabeled_embeddings, UMAP(n_components=2)
-    )
+    # plot_embeddings_2d(labeled_embeddings)
+    # plot_embeddings_3d(labeled_embeddings)
+    # plot_embeddings_map(labeled_embeddings, labeled_lat_lon)
 
-    plot_embeddings_2d(labeled_embeddings)
-    plot_embeddings_3d(labeled_embeddings)
-    plot_embeddings_map(labeled_embeddings, labeled_lat_lon)
-
-    plot_embeddings_2d(unlabeled_embeddings)
-    plot_embeddings_3d(unlabeled_embeddings)
+    # plot_embeddings_2d(unlabeled_embeddings)
+    # plot_embeddings_3d(unlabeled_embeddings)
     plot_embeddings_map(unlabeled_embeddings, unlabeled_lat_lon)
 
     # plot_embeddings_2d(labeled_embeddings, UMAP(n_components=2))

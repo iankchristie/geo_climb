@@ -62,7 +62,7 @@ def plot_interactive_metrics_geo(
         if show_negative_prediction:
             plot_class(negative_prediction, "yellow", "Negative Prediction")
 
-        plt.title("Model Metrics")
+        plt.title("Positive Predictions")
         ax.legend()
         plt.draw()
 
